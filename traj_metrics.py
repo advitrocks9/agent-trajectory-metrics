@@ -8,8 +8,20 @@ from collections import Counter
 from pathlib import Path
 
 
+def role_of(msg: dict) -> str:
+    if "role" in msg:
+        return msg["role"]
+    # GPT-5-2-Codex submissions store raw OpenAI Responses API objects
+    # in the messages array with no role field.
+    if msg.get("object") == "response" or msg.get("type") == "response":
+        return "assistant"
+    if msg.get("type") == "function_call_output":
+        return "tool"
+    return "unknown"
+
+
 def count_messages(trajectory: dict) -> Counter:
-    return Counter(m["role"] for m in trajectory["messages"])
+    return Counter(role_of(m) for m in trajectory["messages"])
 
 
 LABELS = [
