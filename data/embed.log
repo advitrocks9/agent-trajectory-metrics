@@ -1,0 +1,16 @@
+device: cuda
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights: 100%|██████████| 338/338 [00:00<00:00, 4832.07it/s]
+3000 patches to embed
+  16/3000
+  336/3000
+  656/3000
+  976/3000
+  1296/3000
+  1616/3000
+  1936/3000
+  2256/3000
+  2576/3000
+  2896/3000
+wrote embeddings.npy shape=(3000, 1536), embeddings_index.csv
