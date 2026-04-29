@@ -1,0 +1,26 @@
+
+Leave-one-model-out cross-validation
+================================================================
+held-out model            n_test    AUC   Brier  baseline AUC
+Claude 4.5 Opus high         500  0.781   0.142         0.500
+Gemini 3 Flash high          500  0.670   0.167         0.500
+MiniMax M2.5 high            500  0.771   0.168         0.500
+Claude 4.6 Opus              500  0.741   0.162         0.500
+mean across folds                 0.741   0.160
+
+Coefficients (trained on all four labelled models)
+================================================================
+  patch_sim              +3.084
+  patch_lines            -0.359
+  n_test                 -0.297
+  n_edit                 -0.190
+  n_edit_files           +0.162
+  n_search               +0.149
+  edit_churn             +0.106
+  n_git                  -0.084
+  n_read                 +0.059
+  patch_files            +0.053
+  n_calls                +0.034
+  n_repo_edits           -0.033
+  n_install              -0.013
+  call_unique_ratio      -0.010
