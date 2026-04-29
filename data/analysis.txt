@@ -1,0 +1,55 @@
+Top-of-leaderboard, mini-SWE-agent v2 on SWE-bench Verified
+==============================================================================
+Model                   pass@1   $/inst  asst med  edits  churn  patch L
+Claude 4.5 Opus high     76.8% $ 0.754        29      5   0.00        6
+Gemini 3 Flash high      75.8% $ 0.356        54     11   0.28        6
+MiniMax M2.5 high        75.8% $ 0.073        52      5   0.00        6
+Claude 4.6 Opus          75.6% $ 0.552        23      3   0.00        4
+GPT-5-2-Codex            72.8% $ 0.449        31      3   0.00       15
+
+Conditional resolve probability given trajectory has reached turn k
+==============================================================================
+Model                  k>=  0  k>= 10  k>= 20  k>= 30  k>= 50  k>= 75  k>=100
+Claude 4.5 Opus high     77%     77%     74%     65%     46%      9%      0%
+Gemini 3 Flash high      76%     76%     76%     76%     73%     68%     50%
+MiniMax M2.5 high        76%     76%     75%     73%     65%     57%     57%
+Claude 4.6 Opus          76%     74%     68%     62%     52%     47%     25%
+
+Edit churn (re-edit / repo-edit) by outcome, only trajectories with >=1 repo edit
+==============================================================================
+Model                     n   churn (resolved)   churn (unresolved)
+Claude 4.5 Opus high    441      0.115 (n=343)       0.128 (n=98)
+Gemini 3 Flash high     496      0.299 (n=379)       0.307 (n=117)
+MiniMax M2.5 high       412      0.187 (n=320)       0.271 (n=92)
+Claude 4.6 Opus         331      0.125 (n=268)       0.143 (n=63)
+
+Spearman ρ (tie-corrected) between feature and resolved (binary)
+==============================================================================
+Model                  n_assistant       n_edit   edit_churn       n_test  patch_lines    patch_sim
+Claude 4.5 Opus high        -0.338       -0.178       -0.052       -0.349       -0.189       +0.300
+Gemini 3 Flash high         -0.129       -0.126       -0.004       -0.112       -0.132       +0.225
+MiniMax M2.5 high           -0.308       -0.117       -0.062       -0.307       -0.133       +0.338
+Claude 4.6 Opus             -0.270       -0.154       +0.042       -0.285       -0.093       +0.279
+
+Patch similarity by outcome
+==============================================================================
+Model                     mean (resolved)    mean (unresolved)    gap
+Claude 4.5 Opus high                0.985                0.918 +0.067
+Gemini 3 Flash high                 0.983                0.947 +0.036
+MiniMax M2.5 high                   0.983                0.943 +0.040
+Claude 4.6 Opus                     0.984                0.926 +0.058
+
+Cost per resolved task (leaderboard cost / number resolved)
+==============================================================================
+Claude 4.5 Opus high   $0.982 per resolved ($377 / 384)
+Gemini 3 Flash high    $0.470 per resolved ($178 / 379)
+MiniMax M2.5 high      $0.097 per resolved ($37 / 379)
+Claude 4.6 Opus        $0.730 per resolved ($276 / 378)
+GPT-5-2-Codex          $0.617 per resolved ($225 / 364)
+
+Hit-the-step-cap = LimitsExceeded
+==============================================================================
+Claude 4.5 Opus high     7 hit, 0 resolved
+MiniMax M2.5 high        3 hit, 0 resolved
+Claude 4.6 Opus          8 hit, 0 resolved
+TOTAL                   18 hit, 0 resolved
