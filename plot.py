@@ -138,7 +138,44 @@ def main() -> None:
     fig.savefig(PLOTS / "patch_sim.png", dpi=150)
     plt.close(fig)
 
-    print(f"wrote 3 PNGs under {PLOTS}/", )
+    # Plot 4: prefix-conditional classifier AUC vs k (LOMO mean ± fold range).
+    prefix_path = DATA / "prefix_features.csv"
+    if prefix_path.exists():
+        from classify_prefix import PREFIX_FEATURES, fit_eval, LABELLED as PF_LABELLED
+        prows = list(csv.DictReader(prefix_path.open()))
+        prows = [r for r in prows if r["model"] in PF_LABELLED and r["resolved"] in {"True", "False"}]
+        ks_pf = [5, 10, 20, 30, 50]
+        means, los, his = [], [], []
+        for k in ks_pf:
+            sub = [r for r in prows if int(r["k"]) == k and r["reached"] == "1"]
+            aucs = []
+            for held in PF_LABELLED:
+                train = [r for r in sub if r["model"] != held]
+                test = [r for r in sub if r["model"] == held]
+                if len(test) < 20 or len(set(r["resolved"] for r in test)) < 2:
+                    continue
+                auc, _, _ = fit_eval(train, test)
+                aucs.append(auc)
+            means.append(np.mean(aucs))
+            los.append(min(aucs))
+            his.append(max(aucs))
+        fig, ax = plt.subplots(figsize=(7, 4.5))
+        ax.plot(ks_pf, means, "o-", color="#3a3a3a", linewidth=2, label="LOMO mean AUC")
+        ax.fill_between(ks_pf, los, his, color="#3a3a3a", alpha=0.18, linewidth=0,
+                        label="fold range")
+        ax.axhline(0.5, color="grey", linestyle="--", linewidth=1, alpha=0.7, label="chance (AUC=0.5)")
+        ax.set_xlabel("prefix length k (assistant turns visible to the classifier)")
+        ax.set_ylabel("LOMO AUC of P(eventual resolved | prefix-features)")
+        ax.set_title("In-flight classifier AUC decays with prefix length")
+        ax.set_ylim(0.35, 0.7)
+        ax.set_xticks(ks_pf)
+        ax.grid(alpha=0.25, linewidth=0.5)
+        ax.legend(loc="upper right", fontsize=9)
+        fig.tight_layout()
+        fig.savefig(PLOTS / "prefix_auc.png", dpi=150)
+        plt.close(fig)
+    written = sum(1 for p in PLOTS.glob("*.png"))
+    print(f"wrote {written} PNGs under {PLOTS}/")
 
 
 if __name__ == "__main__":
