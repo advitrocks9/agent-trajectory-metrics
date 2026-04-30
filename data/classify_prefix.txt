@@ -1,0 +1,46 @@
+Prefix-conditional LOMO classifier
+========================================================================
+  k fold                    n_test    AUC   Brier  p_mean
+  5 Claude 4.5 Opus high       500  0.655   0.184   0.649
+  5 Gemini 3 Flash high        498  0.509   0.192   0.852
+  5 MiniMax M2.5 high          500  0.548   0.183   0.770
+  5 Claude 4.6 Opus            500  0.652   0.179   0.792
+  5 mean                            0.591
+
+ 10 Claude 4.5 Opus high       499  0.642   0.179   0.687
+ 10 Gemini 3 Flash high        496  0.524   0.193   0.866
+ 10 MiniMax M2.5 high          500  0.611   0.179   0.741
+ 10 Claude 4.6 Opus            459  0.576   0.192   0.767
+ 10 mean                            0.588
+
+ 20 Claude 4.5 Opus high       423  0.621   0.194   0.664
+ 20 Gemini 3 Flash high        495  0.518   0.188   0.837
+ 20 MiniMax M2.5 high          483  0.574   0.187   0.717
+ 20 Claude 4.6 Opus            311  0.604   0.214   0.739
+ 20 mean                            0.579
+
+ 30 Claude 4.5 Opus high       243  0.583   0.228   0.660
+ 30 Gemini 3 Flash high        480  0.488   0.190   0.795
+ 30 MiniMax M2.5 high          428  0.525   0.202   0.684
+ 30 Claude 4.6 Opus            179  0.578   0.237   0.684
+ 30 mean                            0.543
+
+ 50 Claude 4.5 Opus high        69  0.410   0.318   0.667
+ 50 Gemini 3 Flash high        305  0.451   0.211   0.645
+ 50 MiniMax M2.5 high          266  0.498   0.237   0.622
+ 50 Claude 4.6 Opus             66  0.432   0.269   0.613
+ 50 mean                            0.448
+
+ 75 Claude 4.5 Opus high        11   skipped (too few/single class)
+ 75 Gemini 3 Flash high         75  0.404   0.261   0.530
+ 75 MiniMax M2.5 high          127  0.418   0.281   0.543
+ 75 Claude 4.6 Opus             17   skipped (too few/single class)
+ 75 mean                            0.411
+
+Mean LOMO AUC by prefix length k:
+  k=  5  mean AUC = 0.591  range across folds = [0.509, 0.655]  n_folds=4
+  k= 10  mean AUC = 0.588  range across folds = [0.524, 0.642]  n_folds=4
+  k= 20  mean AUC = 0.579  range across folds = [0.518, 0.621]  n_folds=4
+  k= 30  mean AUC = 0.543  range across folds = [0.488, 0.583]  n_folds=4
+  k= 50  mean AUC = 0.448  range across folds = [0.410, 0.498]  n_folds=4
+  k= 75  mean AUC = 0.411  range across folds = [0.404, 0.418]  n_folds=2
