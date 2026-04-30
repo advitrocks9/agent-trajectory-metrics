@@ -1,0 +1,88 @@
+device: cuda
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/272 [00:00<?, ?it/s]Loading weights: 100%|██████████| 272/272 [00:00<00:00, 12642.69it/s]
+[transformers] [1mLlamaModel LOAD REPORT[0m from: JetBrains/Mellum-4b-sft-python
+Key            | Status     |  | 
+---------------+------------+--+-
+lm_head.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+3000 patches to embed with JetBrains/Mellum-4b-sft-python
+  1/3000
+  41/3000
+  81/3000
+  121/3000
+  161/3000
+  201/3000
+  241/3000
+  281/3000
+  321/3000
+  361/3000
+  401/3000
+  441/3000
+  481/3000
+  521/3000
+  561/3000
+  601/3000
+  641/3000
+  681/3000
+  721/3000
+  761/3000
+  801/3000
+  841/3000
+  881/3000
+  921/3000
+  961/3000
+  1001/3000
+  1041/3000
+  1081/3000
+  1121/3000
+  1161/3000
+  1201/3000
+  1241/3000
+  1281/3000
+  1321/3000
+  1361/3000
+  1401/3000
+  1441/3000
+  1481/3000
+  1521/3000
+  1561/3000
+  1601/3000
+  1641/3000
+  1681/3000
+  1721/3000
+  1761/3000
+  1801/3000
+  1841/3000
+  1881/3000
+  1921/3000
+  1961/3000
+  2001/3000
+  2041/3000
+  2081/3000
+  2121/3000
+  2161/3000
+  2201/3000
+  2241/3000
+  2281/3000
+  2321/3000
+  2361/3000
+  2401/3000
+  2441/3000
+  2481/3000
+  2521/3000
+  2561/3000
+  2601/3000
+  2641/3000
+  2681/3000
+  2721/3000
+  2761/3000
+  2801/3000
+  2841/3000
+  2881/3000
+  2921/3000
+  2961/3000
+wrote embeddings_mellum.npy shape=(3000, 3072)
