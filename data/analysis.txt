@@ -25,19 +25,28 @@ Claude 4.6 Opus         331      0.125 (n=268)       0.143 (n=63)
 
 Spearman ρ (tie-corrected) between feature and resolved (binary)
 ==============================================================================
-Model                  n_assistant       n_edit   edit_churn       n_test  patch_lines    patch_sim
-Claude 4.5 Opus high        -0.338       -0.178       -0.052       -0.349       -0.189       +0.300
-Gemini 3 Flash high         -0.129       -0.126       -0.004       -0.112       -0.132       +0.225
-MiniMax M2.5 high           -0.308       -0.117       -0.062       -0.307       -0.133       +0.338
-Claude 4.6 Opus             -0.270       -0.154       +0.042       -0.285       -0.093       +0.279
+Model                  n_assistant       n_edit   edit_churn       n_test  patch_lines    patch_sim  patch_sim_mellum
+Claude 4.5 Opus high        -0.338       -0.178       -0.052       -0.349       -0.189       +0.300       +0.393
+Gemini 3 Flash high         -0.129       -0.126       -0.004       -0.112       -0.132       +0.225       +0.297
+MiniMax M2.5 high           -0.308       -0.117       -0.062       -0.307       -0.133       +0.338       +0.408
+Claude 4.6 Opus             -0.270       -0.154       +0.042       -0.285       -0.093       +0.279       +0.380
 
-Patch similarity by outcome
+Patch similarity by outcome (Qwen vs Mellum)
 ==============================================================================
-Model                     mean (resolved)    mean (unresolved)    gap
-Claude 4.5 Opus high                0.985                0.918 +0.067
-Gemini 3 Flash high                 0.983                0.947 +0.036
-MiniMax M2.5 high                   0.983                0.943 +0.040
-Claude 4.6 Opus                     0.984                0.926 +0.058
+  Qwen-Coder-1.5B:
+    Model                    mean res  mean unres     gap
+    Claude 4.5 Opus high        0.985       0.918  +0.067
+    Gemini 3 Flash high         0.983       0.947  +0.036
+    MiniMax M2.5 high           0.983       0.943  +0.040
+    Claude 4.6 Opus             0.984       0.926  +0.058
+
+  Mellum-4B-sft-py:
+    Model                    mean res  mean unres     gap
+    Claude 4.5 Opus high        0.952       0.854  +0.098
+    Gemini 3 Flash high         0.941       0.881  +0.060
+    MiniMax M2.5 high           0.945       0.869  +0.076
+    Claude 4.6 Opus             0.949       0.865  +0.084
+
 
 Cost per resolved task (leaderboard cost / number resolved)
 ==============================================================================

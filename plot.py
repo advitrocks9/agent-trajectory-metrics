@@ -59,7 +59,10 @@ def survival_curve(
 
 def main() -> None:
     PLOTS.mkdir(exist_ok=True)
-    rows = list(csv.DictReader((DATA / "features_with_sim.csv").open()))
+    src = DATA / "features_with_both_sim.csv"
+    if not src.exists():
+        src = DATA / "features_with_sim.csv"
+    rows = list(csv.DictReader(src.open()))
     by_model: dict[str, list[dict]] = defaultdict(list)
     for r in rows:
         by_model[r["model"]].append(r)
@@ -138,7 +141,38 @@ def main() -> None:
     fig.savefig(PLOTS / "patch_sim.png", dpi=150)
     plt.close(fig)
 
-    # Plot 4: prefix-conditional classifier AUC vs k (LOMO mean ± fold range).
+    # Plot 4: Mellum vs Qwen patch-similarity gap, by model + outcome.
+    has_mellum = any(r.get("patch_sim_mellum") for r in rows)
+    if has_mellum:
+        fig, ax = plt.subplots(figsize=(7, 4.5))
+        width = 0.18
+        xpos = np.arange(len(LABELLED))
+        for i, (col, label, colour, off) in enumerate([
+            ("patch_sim", "Qwen res", "#3873b8", -1.5),
+            ("patch_sim", "Qwen unres", "#9bbedd", -0.5),
+            ("patch_sim_mellum", "Mellum res", "#cc7722", 0.5),
+            ("patch_sim_mellum", "Mellum unres", "#e6b87a", 1.5),
+        ]):
+            vals, errs = [], []
+            for m in LABELLED:
+                rs = [r for r in by_model[m] if r["resolved"] in {"True", "False"} and r.get(col)]
+                target = "True" if "res" in label and "unres" not in label else "False"
+                xs = np.array([float(r[col]) for r in rs if r["resolved"] == target])
+                vals.append(xs.mean() if len(xs) else 0)
+                errs.append(xs.std(ddof=1) / np.sqrt(len(xs)) if len(xs) > 1 else 0)
+            ax.bar(xpos + off * width, vals, width, yerr=errs, label=label, color=colour)
+        ax.set_xticks(xpos)
+        ax.set_xticklabels([m.replace(" high", "") for m in LABELLED], rotation=15, ha="right")
+        ax.set_ylabel("mean cosine sim to ground-truth patch")
+        ax.set_title("Patch similarity by encoder: Mellum gives a wider resolved/unresolved gap")
+        ax.set_ylim(0.82, 1.0)
+        ax.legend(fontsize=8, loc="lower right")
+        ax.grid(axis="y", alpha=0.25, linewidth=0.5)
+        fig.tight_layout()
+        fig.savefig(PLOTS / "mellum_vs_qwen.png", dpi=150)
+        plt.close(fig)
+
+    # Plot 5: prefix-conditional classifier AUC vs k (LOMO mean ± fold range).
     prefix_path = DATA / "prefix_features.csv"
     if prefix_path.exists():
         from classify_prefix import PREFIX_FEATURES, fit_eval, LABELLED as PF_LABELLED

@@ -67,9 +67,10 @@ def spearman(xs, ys):
 
 
 def main():
-    csv_path = DATA / "features_with_sim.csv"
-    if not csv_path.exists():
-        csv_path = DATA / "features.csv"
+    for cand in ("features_with_both_sim.csv", "features_with_sim.csv", "features.csv"):
+        csv_path = DATA / cand
+        if csv_path.exists():
+            break
     rows = list(csv.DictReader(csv_path.open()))
     meta = {r["folder"]: r for r in json.loads((DATA / "leaderboard.json").read_text())}
     by_model = defaultdict(list)
@@ -118,7 +119,7 @@ def main():
     print()
     print("Spearman ρ (tie-corrected) between feature and resolved (binary)")
     print("=" * 78)
-    feats = ["n_assistant", "n_edit", "edit_churn", "n_test", "patch_lines", "patch_sim"]
+    feats = ["n_assistant", "n_edit", "edit_churn", "n_test", "patch_lines", "patch_sim", "patch_sim_mellum"]
     print(f"{'Model':<22} " + "  ".join(f"{f:>11}" for f in feats))
     for m in LABELLED:
         rs = [r for r in by_model[m] if r["resolved"] in {"True", "False"}]
@@ -136,16 +137,19 @@ def main():
         print(f"{m:<22} {'  '.join(cells)}")
 
     print()
-    print("Patch similarity by outcome")
+    print("Patch similarity by outcome (Qwen vs Mellum)")
     print("=" * 78)
-    print(f"{'Model':<22} {'mean (resolved)':>18} {'mean (unresolved)':>20} {'gap':>6}")
-    for m in LABELLED:
-        rs = [r for r in by_model[m] if r["resolved"] in {"True", "False"} and r.get("patch_sim")]
-        s_r = [float(r["patch_sim"]) for r in rs if r["resolved"] == "True"]
-        s_u = [float(r["patch_sim"]) for r in rs if r["resolved"] == "False"]
-        if s_r and s_u:
-            gap = statistics.mean(s_r) - statistics.mean(s_u)
-            print(f"{m:<22} {statistics.mean(s_r):>18.3f} {statistics.mean(s_u):>20.3f} {gap:>+6.3f}")
+    for col, label in [("patch_sim", "Qwen-Coder-1.5B"), ("patch_sim_mellum", "Mellum-4B-sft-py")]:
+        print(f"  {label}:")
+        print(f"    {'Model':<22} {'mean res':>10} {'mean unres':>11} {'gap':>7}")
+        for m in LABELLED:
+            rs = [r for r in by_model[m] if r["resolved"] in {"True", "False"} and r.get(col)]
+            s_r = [float(r[col]) for r in rs if r["resolved"] == "True"]
+            s_u = [float(r[col]) for r in rs if r["resolved"] == "False"]
+            if s_r and s_u:
+                gap = statistics.mean(s_r) - statistics.mean(s_u)
+                print(f"    {m:<22} {statistics.mean(s_r):>10.3f} {statistics.mean(s_u):>11.3f} {gap:>+7.3f}")
+        print()
 
     print()
     print("Cost per resolved task (leaderboard cost / number resolved)")
