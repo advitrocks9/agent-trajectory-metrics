@@ -208,6 +208,53 @@ def main() -> None:
         fig.tight_layout()
         fig.savefig(PLOTS / "prefix_auc.png", dpi=150)
         plt.close(fig)
+
+    # Plot 6: reliability diagram for the +all classifier under LOMO.
+    has_overlap = rows and "patch_overlap" in rows[0]
+    if has_overlap:
+        from classify_compare import SUBSETS, LABELLED as CC_LABELLED, to_xy
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.preprocessing import StandardScaler
+        cls_rows = [r for r in rows if r["model"] in CC_LABELLED and r["resolved"] in {"True", "False"}]
+        feats = SUBSETS["+all"]
+        ys, ps = [], []
+        for held in CC_LABELLED:
+            train = [r for r in cls_rows if r["model"] != held]
+            test = [r for r in cls_rows if r["model"] == held]
+            Xtr, ytr = to_xy(train, feats)
+            Xte, yte = to_xy(test, feats)
+            mu = np.nanmean(Xtr, axis=0)
+            Xtr = np.where(np.isnan(Xtr), mu, Xtr)
+            Xte = np.where(np.isnan(Xte), mu, Xte)
+            sc = StandardScaler().fit(Xtr)
+            clf = LogisticRegression(max_iter=2000).fit(sc.transform(Xtr), ytr)
+            ps.extend(clf.predict_proba(sc.transform(Xte))[:, 1].tolist())
+            ys.extend(yte.tolist())
+        ps_arr = np.array(ps); ys_arr = np.array(ys)
+        bins = np.linspace(0, 1, 11)
+        digi = np.digitize(ps_arr, bins[1:-1])
+        mean_pred = np.array([ps_arr[digi == b].mean() if (digi == b).any() else np.nan for b in range(10)])
+        emp = np.array([ys_arr[digi == b].mean() if (digi == b).any() else np.nan for b in range(10)])
+        nbin = np.array([(digi == b).sum() for b in range(10)])
+        fig, ax = plt.subplots(figsize=(6.5, 4.5))
+        ax.plot([0, 1], [0, 1], "--", color="grey", alpha=0.6, label="perfect calibration")
+        ax.plot(mean_pred, emp, "o-", color="#3873b8", linewidth=2, markersize=7,
+                label="LOMO classifier (+all features)")
+        for x, y, n in zip(mean_pred, emp, nbin):
+            if np.isnan(x):
+                continue
+            ax.annotate(str(n), (x, y), textcoords="offset points", xytext=(4, -8),
+                        fontsize=7, color="#555")
+        ax.set_xlabel("mean predicted P(resolved) per decile")
+        ax.set_ylabel("empirical fraction resolved")
+        ax.set_title("Reliability diagram, pooled across 4 LOMO folds (n=2000)")
+        ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+        ax.grid(alpha=0.25, linewidth=0.5)
+        ax.legend(loc="upper left", fontsize=9)
+        fig.tight_layout()
+        fig.savefig(PLOTS / "calibration.png", dpi=150)
+        plt.close(fig)
+
     written = sum(1 for p in PLOTS.glob("*.png"))
     print(f"wrote {written} PNGs under {PLOTS}/")
 
