@@ -44,3 +44,13 @@ Mean LOMO AUC by prefix length k:
   k= 30  mean AUC = 0.543  range across folds = [0.488, 0.583]  n_folds=4
   k= 50  mean AUC = 0.448  range across folds = [0.410, 0.498]  n_folds=4
   k= 75  mean AUC = 0.411  range across folds = [0.404, 0.418]  n_folds=2
+
+Sanity: within-model 5-fold CV (no transfer)
+========================================================================
+  k   mean AUC   n_folds
+  5      0.595        20
+ 10      0.609        20
+ 20      0.602        20
+ 30      0.592        20
+ 50      0.589        20
+ 75      0.422        10

@@ -59,6 +59,30 @@ def fit_eval(train: list[dict], test: list[dict]) -> tuple[float, float, float]:
     return roc_auc_score(yte, proba), brier_score_loss(yte, proba), proba.mean()
 
 
+def within_model_cv_auc(rows: list[dict], n_splits: int = 5, seed: int = 1) -> tuple[float, list[float]]:
+    """Per-model 5-fold CV AUC, then average across models. Sanity check that
+    the LOMO decay isn't a transfer artifact: if within-model CV also decays,
+    the signal really is weakening."""
+    rng = np.random.default_rng(seed)
+    aucs = []
+    for m in LABELLED:
+        sub = [r for r in rows if r["model"] == m]
+        if len(sub) < 50 or len({r["resolved"] for r in sub}) < 2:
+            continue
+        idx = np.arange(len(sub))
+        rng.shuffle(idx)
+        folds = np.array_split(idx, n_splits)
+        for f in folds:
+            test = [sub[i] for i in f]
+            train = [sub[i] for i in idx if i not in set(f)]
+            if len({r["resolved"] for r in test}) < 2:
+                continue
+            auc, _, _ = fit_eval(train, test)
+            if not np.isnan(auc):
+                aucs.append(auc)
+    return float(np.mean(aucs)) if aucs else float("nan"), aucs
+
+
 def main() -> int:
     rows = list(csv.DictReader((DATA / "prefix_features.csv").open()))
     rows = [r for r in rows if r["model"] in LABELLED and r["resolved"] in {"True", "False"}]
@@ -87,9 +111,16 @@ def main() -> int:
 
     print("Mean LOMO AUC by prefix length k:")
     for k, aucs in summary.items():
-        # 95% interval across the 4 model folds
-        lo, hi = np.quantile(aucs, [0.025, 0.975])
         print(f"  k={k:>3}  mean AUC = {np.mean(aucs):.3f}  range across folds = [{min(aucs):.3f}, {max(aucs):.3f}]  n_folds={len(aucs)}")
+
+    print()
+    print("Sanity: within-model 5-fold CV (no transfer)")
+    print("=" * 72)
+    print(f"{'k':>3} {'mean AUC':>10}  {'n_folds':>8}")
+    for k in [5, 10, 20, 30, 50, 75]:
+        sub = [r for r in rows if int(r["k"]) == k and r["reached"] == "1"]
+        mean, all_aucs = within_model_cv_auc(sub)
+        print(f"{k:>3} {mean:>10.3f}  {len(all_aucs):>8}")
     return 0
 
 
