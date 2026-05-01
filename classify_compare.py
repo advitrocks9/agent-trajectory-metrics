@@ -1,14 +1,18 @@
-"""Compare feature subsets in the LOMO classifier.
+"""Compare feature subsets in the LOMO classifier, with bootstrap CIs.
 
-Asks: how much does each information source add to the AUC?
+Asks: how much does each information source add to the AUC, and how big
+are the error bars?
 
-  base    -> trajectory-shape features only (no patch features at all)
-  +shape  -> base + final patch line/file count
-  +qwen   -> +shape + cosine similarity with Qwen2.5-Coder-1.5B embeddings
-  +mellum -> +shape + cosine with JetBrains/Mellum-4b-sft-python
-  +both   -> +shape + Qwen sim + Mellum sim
+  base       -> trajectory-shape features only (no patch features at all)
+  +shape     -> base + final patch line/file count
+  +overlap   -> +shape + Jaccard similarity over patch hunk lines (no LM)
+  +qwen      -> +shape + cosine with Qwen2.5-Coder-1.5B embeddings
+  +mellum    -> +shape + cosine with JetBrains/Mellum-4b-sft-python
+  +both LMs  -> +shape + Qwen sim + Mellum sim
 
-Same logistic regression, same leave-one-model-out folds.
+For each subset I report mean LOMO AUC across 4 folds plus the 95% CI
+from a bootstrap of the test-set predictions within each fold (1,000
+resamples per fold, percentile method).
 """
 from __future__ import annotations
 
@@ -40,11 +44,13 @@ SHAPE_FEATURES = [
 PATCH_SHAPE_FEATURES = ["patch_lines", "patch_files"]
 
 SUBSETS = {
-    "base":    SHAPE_FEATURES,
-    "+shape":  SHAPE_FEATURES + PATCH_SHAPE_FEATURES,
-    "+qwen":   SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim"],
-    "+mellum": SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim_mellum"],
-    "+both":   SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim", "patch_sim_mellum"],
+    "base":      SHAPE_FEATURES,
+    "+shape":    SHAPE_FEATURES + PATCH_SHAPE_FEATURES,
+    "+overlap":  SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_overlap"],
+    "+qwen":     SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim"],
+    "+mellum":   SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim_mellum"],
+    "+both LMs": SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim", "patch_sim_mellum"],
+    "+all":      SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_overlap", "patch_sim", "patch_sim_mellum"],
 }
 
 
@@ -59,8 +65,14 @@ def to_xy(rows: list[dict], features: list[str]) -> tuple[np.ndarray, np.ndarray
     return X, y
 
 
-def lomo_auc(rows: list[dict], features: list[str]) -> tuple[float, list[float]]:
-    aucs = []
+def lomo_auc(
+    rows: list[dict], features: list[str], n_boot: int = 1000, seed: int = 1
+) -> tuple[float, tuple[float, float], list[float]]:
+    """Mean LOMO AUC + 95% bootstrap CI on the pooled out-of-fold predictions."""
+    rng = np.random.default_rng(seed)
+    fold_aucs: list[float] = []
+    pooled_y: list[int] = []
+    pooled_p: list[float] = []
     for held in LABELLED:
         train = [r for r in rows if r["model"] != held]
         test = [r for r in rows if r["model"] == held]
@@ -72,8 +84,18 @@ def lomo_auc(rows: list[dict], features: list[str]) -> tuple[float, list[float]]
         sc = StandardScaler().fit(Xtr)
         clf = LogisticRegression(max_iter=2000, C=1.0).fit(sc.transform(Xtr), ytr)
         proba = clf.predict_proba(sc.transform(Xte))[:, 1]
-        aucs.append(roc_auc_score(yte, proba))
-    return float(np.mean(aucs)), aucs
+        fold_aucs.append(roc_auc_score(yte, proba))
+        pooled_y.extend(yte.tolist())
+        pooled_p.extend(proba.tolist())
+    pooled_y_arr = np.array(pooled_y)
+    pooled_p_arr = np.array(pooled_p)
+    n = len(pooled_y_arr)
+    boot = np.empty(n_boot)
+    for b in range(n_boot):
+        idx = rng.integers(0, n, n)
+        boot[b] = roc_auc_score(pooled_y_arr[idx], pooled_p_arr[idx])
+    lo, hi = np.quantile(boot, [0.025, 0.975])
+    return float(np.mean(fold_aucs)), (float(lo), float(hi)), fold_aucs
 
 
 def main() -> int:
@@ -86,11 +108,15 @@ def main() -> int:
 
     print(f"labelled rows: {len(rows)}")
     print()
-    print("Feature subset            mean AUC   per-fold (Opus5h, Gemini, MiniMax, Opus6)")
-    print("-" * 76)
+    print(f"{'Feature subset':<14}  {'mean AUC':>9}  {'95% CI':>14}   per-fold (Opus5h, Gemini, MiniMax, Opus6)")
+    print("-" * 92)
+    rows_for_overlap = [r for r in rows if "patch_overlap" in r]
+    if not rows_for_overlap:
+        print("  (run patch_overlap.py first to populate the overlap column)")
+        return 1
     for name, feats in SUBSETS.items():
-        mean, aucs = lomo_auc(rows, feats)
-        print(f"  {name:<22}  {mean:>7.3f}    {' '.join(f'{a:.3f}' for a in aucs)}")
+        mean, (lo, hi), aucs = lomo_auc(rows, feats)
+        print(f"  {name:<12}  {mean:>9.3f}  [{lo:.3f}, {hi:.3f}]   {' '.join(f'{a:.3f}' for a in aucs)}")
     return 0
 
 
