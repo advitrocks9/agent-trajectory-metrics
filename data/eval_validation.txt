@@ -1,0 +1,33 @@
+model                  instance                      leaderboard    docker   match
+----------------------------------------------------------------------------------------
+Claude 4.5 Opus high   django__django-11099                 True      True       ✓
+Claude 4.5 Opus high   django__django-11951                 True      True       ✓
+Claude 4.5 Opus high   django__django-13212                False     False       ✓
+Claude 4.5 Opus high   django__django-13807                 True      True       ✓
+Claude 4.5 Opus high   django__django-14493                 True      True       ✓
+Claude 4.5 Opus high   django__django-14752                 True      True       ✓
+Claude 4.5 Opus high   django__django-15732                False     False       ✓
+Claude 4.5 Opus high   django__django-16082                 True      True       ✓
+Claude 4.5 Opus high   django__django-16315                 True      True       ✓
+Claude 4.5 Opus high   django__django-16454                False     False       ✓
+Gemini 3 Flash high    django__django-11099                 True      True       ✓
+Gemini 3 Flash high    django__django-11951                 True      True       ✓
+Gemini 3 Flash high    django__django-13212                False     False       ✓
+Gemini 3 Flash high    django__django-13807                 True      True       ✓
+Gemini 3 Flash high    django__django-14493                 True      True       ✓
+Gemini 3 Flash high    django__django-14752                 True      True       ✓
+Gemini 3 Flash high    django__django-16082                 True      True       ✓
+Gemini 3 Flash high    django__django-16315                 True      True       ✓
+Gemini 3 Flash high    django__django-16454                False     False       ✓
+MiniMax M2.5 high      django__django-11099                 True      True       ✓
+MiniMax M2.5 high      django__django-11951                 True      True       ✓
+MiniMax M2.5 high      django__django-13212                False     False       ✓
+MiniMax M2.5 high      django__django-13807                 True      True       ✓
+MiniMax M2.5 high      django__django-14493                 True      True       ✓
+MiniMax M2.5 high      django__django-14752                 True      True       ✓
+MiniMax M2.5 high      django__django-15732                False     False       ✓
+MiniMax M2.5 high      django__django-16082                 True      True       ✓
+MiniMax M2.5 high      django__django-16315                 True      True       ✓
+MiniMax M2.5 high      django__django-16454                 True      True       ✓
+----------------------------------------------------------------------------------------
+agreement: 29/29 (100%); 0 disagree; 0 unlabelled (codex)
