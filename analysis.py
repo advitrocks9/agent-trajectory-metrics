@@ -160,6 +160,27 @@ def main():
         print(f"{m:<22} ${leader['cost']/n_res:>5.3f} per resolved (${leader['cost']:.0f} / {n_res:.0f})")
 
     print()
+    print("Per-repo summary (8 most common repos in SWE-bench Verified)")
+    print("=" * 78)
+    by_repo: dict[str, list[dict]] = defaultdict(list)
+    for r in rows:
+        if r["resolved"] not in {"True", "False"}:
+            continue
+        by_repo[r["instance_id"].split("__", 1)[0]].append(r)
+    common_repos = sorted(by_repo.items(), key=lambda kv: -len(kv[1]))[:8]
+    print(f"  {'repo':<14} {'n':>4} {'pass@1':>7} {'turns med':>10} {'patch_sim_m':>12} {'patch_overlap':>14}")
+    for repo, rs in common_repos:
+        n = len(rs)
+        pass1 = sum(1 for r in rs if r["resolved"] == "True") / n * 100
+        turns = sorted(int(r["n_assistant"]) for r in rs)
+        sims = [float(r["patch_sim_mellum"]) for r in rs if r.get("patch_sim_mellum")]
+        ovs = [float(r["patch_overlap"]) for r in rs if r.get("patch_overlap")]
+        print(
+            f"  {repo:<14} {n:>4} {pass1:>6.1f}% {turns[n//2]:>10} "
+            f"{statistics.mean(sims):>12.3f} {statistics.mean(ovs):>14.3f}"
+        )
+
+    print()
     print("Hit-the-step-cap = LimitsExceeded")
     print("=" * 78)
     total = solved = 0

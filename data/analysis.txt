@@ -56,6 +56,18 @@ MiniMax M2.5 high      $0.097 per resolved ($37 / 379)
 Claude 4.6 Opus        $0.730 per resolved ($276 / 378)
 GPT-5-2-Codex          $0.617 per resolved ($225 / 364)
 
+Per-repo summary (8 most common repos in SWE-bench Verified)
+==============================================================================
+  repo              n  pass@1  turns med  patch_sim_m  patch_overlap
+  django          924   78.9%         35        0.928          0.378
+  sympy           300   74.7%         41        0.929          0.331
+  sphinx-doc      176   72.2%         50        0.923          0.312
+  matplotlib      136   72.8%         46        0.922          0.249
+  scikit-learn    128   90.6%         42        0.938          0.480
+  astropy          88   58.0%         45        0.939          0.334
+  pydata           88   83.0%         42        0.944          0.321
+  pytest-dev       76   76.3%         36        0.923          0.336
+
 Hit-the-step-cap = LimitsExceeded
 ==============================================================================
 Claude 4.5 Opus high     7 hit, 0 resolved
