@@ -1,10 +1,32 @@
 # agent-trajectory-metrics
 
-Trajectory analysis for mini-SWE-agent v2 on the SWE-bench Verified leaderboard. Five top models, 500 tasks each, 2,500 trajectories. Two reports under the repo root: `report.md` is the writeup, `paper-summary.md` is a summary of the *Towards a Science of AI Agent Reliability* paper. Live notes (dead ends, open questions) under `notes/`.
+JetBrains internship submission for *Quality Metrics for Agent Trajectories*. Trajectory analysis on the five top SWE-bench Verified entries on mini-SWE-agent v2: 2,500 trajectories (5 models × 500 tasks).
+
+## Deliverables
+
+The brief asked for three things:
+
+1. **Message-role CLI**: [`traj_metrics.py`](./traj_metrics.py), ~50 LOC. Handles both the `{role, content}` schema and GPT-5-2-Codex's Responses-API messages.
+2. **One-page report**: [`report.md`](./report.md) / [`report.pdf`](./report.pdf). Six findings, validation, caveats. Renders to one A4 page.
+3. **Paper summary**: [`paper-summary.md`](./paper-summary.md) / [`paper-summary.pdf`](./paper-summary.pdf). Rabanser et al, *Towards a Science of AI Agent Reliability* (arXiv:2602.16666), with two pushbacks and how it lands on this work.
+
+## Headline result
+
+| Model                | pass@1 | $/inst | $/resolved | turns med |
+| -------------------- | -----: | -----: | ---------: | --------: |
+| Claude 4.5 Opus high |  76.8% |  $0.75 |      $0.98 |        29 |
+| Gemini 3 Flash high  |  75.8% |  $0.36 |      $0.47 |        54 |
+| MiniMax M2.5 high    |  75.8% |  $0.07 |      $0.10 |        52 |
+| Claude 4.6 Opus      |  75.6% |  $0.55 |      $0.73 |        23 |
+| GPT-5-2-Codex        |  72.8% |  $0.45 |      $0.62 |        31 |
+
+Top five score within 4.2 points on pass@1; per-instance cost spans 10x; ranked by cost-per-resolved-task the leaderboard inverts. A logistic regression on trajectory shape plus patch-content features predicts the resolved flag at LOMO mean AUC **0.78**, 95% bootstrap CI [0.76, 0.80]. The strongest single patch-content feature is the **Jaccard overlap of changed diff lines**: it ties Mellum-4B-sft-python (0.770) and beats Qwen-Coder-1.5B (0.741). Full writeup in [`report.md`](./report.md).
+
+![Conditional resolve probability vs depth](./plots/survival.png)
+
+`S_m(k) = P(resolved | T ≥ k)` collapses very differently across models. Claude 4.5 Opus high goes 77% → 9% over `k = 0, 75`; Gemini 3 Flash holds 76% → 68% across the same range. Validated against the SWE-bench docker harness on a 10-django sample per model: 39/39 matched the leaderboard.
 
 ## Run
-
-The CLI tool the brief asks for is `traj_metrics.py`:
 
 ```bash
 python3 traj_metrics.py path/to/trajectory.json
@@ -51,29 +73,13 @@ python3 plot.py                  # 6 PNGs under plots/
 python3 analysis.py              # every number cited in report.md
 ```
 
-`data/leaderboard.json`, `data/features_with_both_sim.csv`, `data/embeddings.npy`, `data/embeddings_mellum.npy`, and the analysis transcripts are committed so the report numbers can be re-derived without re-downloading 1.3 GB of trajectories or rerunning the GPU jobs. The SWE-bench docker harness was run locally on a 10-instance django sample for validation; the per-(model, instance) reports are under `data/eval_reports/`.
-
-## Headline result
-
-| Model                | pass@1 | $/inst | $/resolved | turns med |
-| -------------------- | -----: | -----: | ---------: | --------: |
-| Claude 4.5 Opus high |  76.8% |  $0.75 |      $0.98 |        29 |
-| Gemini 3 Flash high  |  75.8% |  $0.36 |      $0.47 |        54 |
-| MiniMax M2.5 high    |  75.8% |  $0.07 |      $0.10 |        52 |
-| Claude 4.6 Opus      |  75.6% |  $0.55 |      $0.73 |        23 |
-| GPT-5-2-Codex        |  72.8% |  $0.45 |      $0.62 |        31 |
-
-The five top entries score within 4.2 points on pass@1; per-instance cost spans 10x; ranked by cost-per-resolved-task, the leaderboard inverts. A logistic regression on trajectory shape plus patch-content features predicts the resolved flag at LOMO mean AUC 0.78, 95% CI [0.76, 0.80]. The strongest single patch-content feature is the Jaccard overlap of changed lines between predicted and ground-truth diff: it ties Mellum-4B-sft-python (0.770) and beats Qwen-Coder-1.5B (0.741). See `report.md` / `report.pdf`.
-
-## Schema notes
-
-Four of the five models use the standard `{role, content}` mini-SWE-agent v2 schema. GPT-5-2-Codex emits raw OpenAI Responses API objects directly into the `messages` array (no `role` field; `type=response` for assistant turns, `type=function_call_output` for tool returns). `traj_metrics.py` and the feature extractor handle both.
+`data/leaderboard.json`, `data/features_with_both_sim.csv`, `data/embeddings.npy`, `data/embeddings_mellum.npy`, and the analysis transcripts are committed so the report numbers can be re-derived without re-downloading 1.3 GB of trajectories or rerunning the GPU jobs. Per-(model, instance) docker-harness reports are under `data/eval_reports/`.
 
 ## Files
 
 | Path                                       | Purpose                                                       |
 | ------------------------------------------ | ------------------------------------------------------------- |
-| `traj_metrics.py`                          | the CLI the task brief asks for, ~50 LOC                      |
+| `traj_metrics.py`                          | the CLI the brief asks for, ~50 LOC                           |
 | `features.py`, `prefix_features.py`        | per-trajectory and per-prefix feature extractors              |
 | `download.py`                              | anonymous S3 puller for the 2,500 trajectories                |
 | `patches.py`, `export_patches.py`          | ground-truth and submitted patches in flat directories        |
@@ -82,14 +88,11 @@ Four of the five models use the standard `{role, content}` mini-SWE-agent v2 sch
 | `thrash.py`                                | command-repetition features (depth, window10_max, repeat_rate) |
 | `classify.py`, `classify_compare.py`       | post-hoc classifier and feature-subset ablation with CIs      |
 | `classify_prefix.py`                       | in-flight LOMO + within-model 5-fold CV                       |
-| `plot.py`                                  | 6 PNGs: survival, churn, patch_sim, mellum_vs_qwen, prefix_auc, calibration |
-| `analysis.py`                              | reproduces the numbers in `report.md`                         |
-| `report.md` / `.pdf`                       | the writeup, one page                                         |
-| `paper-summary.md` / `.pdf`                | summary of arXiv:2602.16666                                   |
+| `plot.py`                                  | six PNGs under `plots/`                                       |
+| `analysis.py`, `validate_eval.py`          | reproduces the numbers / cross-checks docker vs leaderboard   |
 | `notes/dead-ends.md`                       | things I tried that did not work                              |
 | `notes/open-questions.md`                  | what I would chase next                                       |
-| `data/features_with_both_sim.csv`          | 2,500 rows × 31 columns (the master features table)           |
-| `data/embeddings.npy`                      | (3000, 1536) float32, Qwen-Coder-1.5B                          |
-| `data/embeddings_mellum.npy`               | (3000, 3072) float32, Mellum-4B-sft-python                     |
-| `data/eval_reports/`                       | SWE-bench docker-harness reports for the 10-instance sample    |
-| `plots/`                                   | six PNGs referenced from `report.md`                          |
+| `data/features_with_both_sim.csv`          | 2,500 rows × 31 columns (master features table)               |
+| `data/embeddings.npy`                      | (3000, 1536) float32, Qwen-Coder-1.5B                         |
+| `data/embeddings_mellum.npy`               | (3000, 3072) float32, Mellum-4B-sft-python                    |
+| `data/eval_reports/`                       | docker-harness reports for the 10-django validation sample    |
