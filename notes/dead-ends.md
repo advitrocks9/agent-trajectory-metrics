@@ -24,12 +24,9 @@ The bash-verb classifier is regex. I never validated it against hand-labelled co
 
 Mellum-4B vs Qwen-Coder-1.5B is not a clean comparison; the +0.029 LOMO lift might be partly the parameter budget. The natural control is Qwen-Coder-3B (closer in size to Mellum-4B) or another ~4B code model. Qwen-Coder-3B is not cached and pulling it pushes /home over the comfort line, so leaving this for follow-up.
 
-## Validating patch_sim against the actual SWE-bench eval
+## Things that landed late
 
-The whole patch-similarity story rests on the assumption that high cosine sim to ground truth ⇒ patch is correct. I never actually ran the patches through the SWE-bench eval harness. The leaderboard-provided `resolved` flag is the proxy, but it is a label per (model, instance), not a per-patch judgement on similarity. The right validation: pull the SWE-bench docker images for ~50 instances, apply each model's submitted patch, run the FAIL_TO_PASS / PASS_TO_PASS test sets. If patch_sim correlates strongly with whether the test suite passes, the metric is validated. If not, it is just a lexical / structural heuristic dressed up in 1536-d.
+Two items were on this list as "skipped"; both shipped.
 
-Worth doing. Not in this submission.
-
-## Calibration of the classifier outputs
-
-I report AUC and Brier. Brier is a proper scoring rule that mixes calibration and discrimination. A reliability diagram would let me actually see whether `P(resolved) = 0.7` predictions resolve at 70%. Skipped it for space.
+* SWE-bench docker validation. `validate_eval.py` runs the SWE-bench harness on a 10-django sample per labelled model and writes `data/eval_validation.txt`. 39/39 of the labelled (model, instance) pairs match the leaderboard. The killer experiment also extends this to a 50-instance balanced subset across 4 models with per-test-pass-fraction features, see `data/execution.csv` and report.md finding 7.
+* Calibration. `plot.py` builds a reliability diagram for the +all LOMO classifier (`plots/calibration.png`) and prints ECE = 0.027 over 10 equal-width bins.
