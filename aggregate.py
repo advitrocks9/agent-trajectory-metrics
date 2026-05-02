@@ -30,7 +30,8 @@ DISPLAY = {
 COLUMNS = [
     "model", "folder", "instance_id",
     "n_messages", "n_assistant", "n_tool", "n_calls",
-    "n_read", "n_edit", "n_search", "n_test", "n_git", "n_install", "n_other",
+    "n_read", "n_edit", "n_scratch_writes",
+    "n_search", "n_test", "n_git", "n_install", "n_other",
     "n_repo_edits", "n_edit_files", "edit_churn", "call_unique_ratio",
     "patch_lines", "patch_files",
     "exit_status", "instance_cost", "api_calls",
@@ -71,7 +72,11 @@ def main() -> int:
                     "n_assistant": tf.n_assistant,
                     "n_tool": tf.n_tool,
                     "n_calls": tf.n_calls,
-                    **{f"n_{a}": tf.counts.get(a, 0) for a in ACTIONS},
+                    **{
+                        ("n_scratch_writes" if a == "scratch_write" else f"n_{a}"):
+                            tf.counts.get(a, 0)
+                        for a in ACTIONS
+                    },
                     "n_repo_edits": tf.n_repo_edits,
                     "n_edit_files": tf.n_edit_files,
                     "edit_churn": f"{tf.edit_churn:.4f}",

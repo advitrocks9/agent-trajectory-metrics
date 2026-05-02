@@ -1,13 +1,7 @@
 """Per-trajectory features: action-type counts, edit churn, patch shape.
 
-A bash command issued by the agent is classified into one of seven action
-types. The classifier is regex-based but tuned to the actual command
-distribution in the SWE-bench Verified mini-SWE-agent v2 trajectories
-(2,500 of them, sampled while writing this).
-
-For edit operations, the parser also extracts the target path so the
-trajectory's edit-churn can be computed: the fraction of edit events that
-hit a file the agent has already touched earlier in the same trajectory.
+Bash command classifier, regex-based. Categories tuned by spot-checking
+~30 commands; not validated against hand labels.
 """
 from __future__ import annotations
 
@@ -19,7 +13,7 @@ from pathlib import Path
 
 from traj_metrics import role_of
 
-ACTIONS = ("read", "edit", "search", "test", "git", "install", "other")
+ACTIONS = ("read", "edit", "scratch_write", "search", "test", "git", "install", "other")
 
 # Verbs we treat as read-only file inspection.
 _READ = re.compile(
@@ -60,11 +54,15 @@ def classify(cmd: str) -> str:
         return "edit"
     if _APPLY_PATCH.search(cmd) or _PY_WRITE.search(cmd):
         return "edit"
-    # bare > redirect to a writable path is an edit, except `2>` and `>/dev/null`
+    # `> path` to a repo file is an edit; to /tmp/scratch.txt or out.log it
+    # is a scratch write. Earlier the latter was bucketed as edit and
+    # n_edit picked up agents using `> patch.txt` as a clipboard, which
+    # is what the prompt repeatedly asks them to do.
     if _REDIRECT.search(cmd) and "/dev/null" not in cmd:
-        # Exclude "2>" stderr redirect, which we already filter via the negative
-        # lookahead, and pipes-to-pager patterns. If we got here, treat as edit.
-        return "edit"
+        target = _redirect_target(cmd)
+        if target and _is_repo_path(target):
+            return "edit"
+        return "scratch_write"
     if _INSTALL.search(cmd):
         return "install"
     if _GIT.search(cmd):
@@ -76,6 +74,11 @@ def classify(cmd: str) -> str:
     if _READ.search(cmd):
         return "read"
     return "other"
+
+
+def _redirect_target(cmd: str) -> str | None:
+    m = _PATH_AFTER_REDIR.search(cmd)
+    return _normalise(m.group(1)) if m else None
 
 
 def edit_target(cmd: str) -> str | None:
