@@ -1,11 +1,19 @@
 """Cheap textual baseline for patch_sim.
 
-Computes the Jaccard overlap of *changed* lines between the predicted patch
-and the ground-truth patch. No LM, no GPU; just diff parsing.
+Jaccard overlap of *changed* lines between the predicted patch and the
+ground-truth patch. No LM, no GPU; just diff parsing.
 
 The point of this baseline is to ask: how much of the embedding-based
 patch-similarity signal is the LM doing real semantic work, vs how much
 is just "the predicted diff and the ground-truth diff share lines"?
+
+Each entry in the set is keyed by `(file, op, payload)`. The first version
+of this script pooled adds and deletes into the same string set, so a
+deletion of `import x` and an addition of `import x` would collapse into
+one element and inflate the score. Cross-file payload collisions
+(boilerplate lines like `from __future__ import annotations`) had the
+same effect. Keeping the file path and the +/- op separate kills both
+classes of false match.
 
 Adds a `patch_overlap` column to features_with_both_sim.csv.
 """
@@ -29,21 +37,29 @@ SLUG = {
 }
 
 
-def changed_lines(diff_text: str) -> set[str]:
-    """Return the multiset (here a set after stripping) of +/- payload lines.
+def changed_lines(diff_text: str) -> set[tuple[str, str, str]]:
+    """`(file, op, payload)` triples for every +/- line in a unified diff.
 
-    We strip the leading +/- and trailing whitespace, drop pure-whitespace
-    lines, and skip the +++/--- file headers and the diff/index/@@ chrome.
+    Tracks the current `+++ b/<path>` so cross-file payload collisions
+    don't inflate the Jaccard. Keeps `+` and `-` distinct so a deletion
+    and an addition of the same line don't collapse together.
     """
-    out: set[str] = set()
+    out: set[tuple[str, str, str]] = set()
+    cur_file = ""
     for ln in diff_text.splitlines():
+        if ln.startswith("+++ "):
+            # `+++ b/path/to/file.py` -> `path/to/file.py`
+            rest = ln[4:].strip()
+            cur_file = rest[2:] if rest.startswith(("a/", "b/")) else rest
+            continue
+        if ln.startswith("--- ") or ln.startswith("@@"):
+            continue
         if not ln or ln[0] not in "+-":
             continue
-        if ln.startswith(("+++", "---")):
-            continue
         body = ln[1:].strip()
-        if body:
-            out.add(body)
+        if not body:
+            continue
+        out.add((cur_file, ln[0], body))
     return out
 
 
