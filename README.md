@@ -43,6 +43,7 @@ python3 patch_overlap.py         # adds Jaccard-overlap-of-hunks baseline column
 
 python3 similarity.py            # adds Qwen patch_sim
 python3 similarity_mellum.py     # adds Mellum patch_sim_mellum
+python3 thrash.py                # adds thrash_depth / window10_max / repeat_rate
 python3 classify.py              # post-hoc LOMO classifier (uses final patch)
 python3 classify_compare.py      # ablation: shape / +overlap / +qwen / +mellum / +all  (with bootstrap CIs)
 python3 classify_prefix.py       # in-flight LOMO + within-model 5-fold CV
@@ -78,6 +79,7 @@ Four of the five models use the standard `{role, content}` mini-SWE-agent v2 sch
 | `patches.py`, `export_patches.py`          | ground-truth and submitted patches in flat directories        |
 | `embed_remote.py`, `embed_mellum.py`       | GPU-side encoders (Qwen and Mellum)                           |
 | `similarity*.py`, `patch_overlap.py`       | three patch-quality features (Qwen, Mellum, Jaccard)          |
+| `thrash.py`                                | command-repetition features (depth, window10_max, repeat_rate) |
 | `classify.py`, `classify_compare.py`       | post-hoc classifier and feature-subset ablation with CIs      |
 | `classify_prefix.py`                       | in-flight LOMO + within-model 5-fold CV                       |
 | `plot.py`                                  | 6 PNGs: survival, churn, patch_sim, mellum_vs_qwen, prefix_auc, calibration |
@@ -86,7 +88,7 @@ Four of the five models use the standard `{role, content}` mini-SWE-agent v2 sch
 | `paper-summary.md` / `.pdf`                | summary of arXiv:2602.16666                                   |
 | `notes/dead-ends.md`                       | things I tried that did not work                              |
 | `notes/open-questions.md`                  | what I would chase next                                       |
-| `data/features_with_both_sim.csv`          | 2,500 rows × 27 columns (the master features table)           |
+| `data/features_with_both_sim.csv`          | 2,500 rows × 31 columns (the master features table)           |
 | `data/embeddings.npy`                      | (3000, 1536) float32, Qwen-Coder-1.5B                          |
 | `data/embeddings_mellum.npy`               | (3000, 3072) float32, Mellum-4B-sft-python                     |
 | `data/eval_reports/`                       | SWE-bench docker-harness reports for the 10-instance sample    |
