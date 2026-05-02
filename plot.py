@@ -28,12 +28,34 @@ COLOURS = {
 }
 
 
+def ece(probs: np.ndarray, labels: np.ndarray, bins: int = 10) -> float:
+    """Expected calibration error on equal-width probability bins."""
+    bin_edges = np.linspace(0, 1, bins + 1)
+    bin_idx = np.digitize(probs, bin_edges[1:-1])
+    error = 0.0
+    for b in range(bins):
+        mask = bin_idx == b
+        if mask.sum() == 0:
+            continue
+        bin_acc = labels[mask].mean()
+        bin_conf = probs[mask].mean()
+        error += (mask.sum() / len(probs)) * abs(bin_acc - bin_conf)
+    return float(error)
+
+
 def survival_curve(
     turns: np.ndarray, resolved: np.ndarray, ks: np.ndarray, n_boot: int = 1000, seed: int = 1
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """For each k in ks, return (point estimate, lo, hi, n_at_risk).
 
-    P(resolve | reached turn k) bootstrapped over the observed instances.
+    P(resolve | reached turn k) at the *marginal* level: bootstrap is
+    over instances at each k independently, so the bands are pointwise
+    95% CIs, not a simultaneous band. That makes statements about the
+    *whole curve* (e.g. "Claude 4.5 Opus collapses faster than Gemini")
+    informal rather than statistically tested. Kaplan-Meier with
+    Greenwood's formula would give a proper survival band; I left that
+    for follow-up because the practical statement here is point-estimate
+    plus per-k confidence.
     """
     rng = np.random.default_rng(seed)
     n = len(turns)
@@ -79,7 +101,7 @@ def main() -> None:
         ax.fill_between(ks, lo, hi, color=COLOURS[m], alpha=0.18, linewidth=0)
     ax.set_xlabel("turn count k (assistant messages)")
     ax.set_ylabel("P(resolve  |  trajectory reached turn k)")
-    ax.set_title("Conditional resolve probability by depth (95% bootstrap CI)")
+    ax.set_title("Conditional resolve probability by depth (pointwise 95% bootstrap CI)")
     ax.set_ylim(0, 1)
     ax.set_xlim(0, 120)
     ax.grid(alpha=0.25, linewidth=0.5)
@@ -236,10 +258,12 @@ def main() -> None:
         mean_pred = np.array([ps_arr[digi == b].mean() if (digi == b).any() else np.nan for b in range(10)])
         emp = np.array([ys_arr[digi == b].mean() if (digi == b).any() else np.nan for b in range(10)])
         nbin = np.array([(digi == b).sum() for b in range(10)])
+        ece_value = ece(ps_arr, ys_arr, bins=10)
+        print(f"ECE (10 equal-width bins, +all LOMO): {ece_value:.4f}")
         fig, ax = plt.subplots(figsize=(6.5, 4.5))
         ax.plot([0, 1], [0, 1], "--", color="grey", alpha=0.6, label="perfect calibration")
         ax.plot(mean_pred, emp, "o-", color="#3873b8", linewidth=2, markersize=7,
-                label="LOMO classifier (+all features)")
+                label=f"LOMO classifier (+all features, ECE={ece_value:.3f})")
         for x, y, n in zip(mean_pred, emp, nbin):
             if np.isnan(x):
                 continue
@@ -247,7 +271,7 @@ def main() -> None:
                         fontsize=7, color="#555")
         ax.set_xlabel("mean predicted P(resolved) per decile")
         ax.set_ylabel("empirical fraction resolved")
-        ax.set_title("Reliability diagram, pooled across 4 LOMO folds (n=2000)")
+        ax.set_title(f"Reliability diagram, pooled across 4 LOMO folds (n=2000, ECE={ece_value:.3f})")
         ax.set_xlim(0, 1); ax.set_ylim(0, 1)
         ax.grid(alpha=0.25, linewidth=0.5)
         ax.legend(loc="upper left", fontsize=9)

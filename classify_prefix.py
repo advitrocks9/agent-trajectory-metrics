@@ -19,6 +19,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score, brier_score_loss
+from sklearn.model_selection import GroupKFold
 from sklearn.preprocessing import StandardScaler
 
 ROOT = Path(__file__).parent
@@ -59,22 +60,30 @@ def fit_eval(train: list[dict], test: list[dict]) -> tuple[float, float, float]:
     return roc_auc_score(yte, proba), brier_score_loss(yte, proba), proba.mean()
 
 
-def within_model_cv_auc(rows: list[dict], n_splits: int = 5, seed: int = 1) -> tuple[float, list[float]]:
-    """Per-model 5-fold CV AUC, then average across models. Sanity check that
-    the LOMO decay isn't a transfer artifact: if within-model CV also decays,
-    the signal really is weakening."""
-    rng = np.random.default_rng(seed)
-    aucs = []
+def within_model_cv_auc(rows: list[dict], n_splits: int = 5) -> tuple[float, list[float]]:
+    """Per-model GroupKFold CV AUC keyed by instance_id, averaged across models.
+
+    Earlier this used `np.random.shuffle`-style folds, which understates
+    the variance of CV estimates because different folds can hold rows
+    from the same instance the model has seen at a different prefix
+    length. With one row per (model, instance, k) and a fixed k subset
+    here, the shuffle isn't a leak per se, but GroupKFold matches the
+    per-instance variance the LOMO numbers are tested against.
+    """
+    aucs: list[float] = []
     for m in LABELLED:
         sub = [r for r in rows if r["model"] == m]
         if len(sub) < 50 or len({r["resolved"] for r in sub}) < 2:
             continue
-        idx = np.arange(len(sub))
-        rng.shuffle(idx)
-        folds = np.array_split(idx, n_splits)
-        for f in folds:
-            test = [sub[i] for i in f]
-            train = [sub[i] for i in idx if i not in set(f)]
+        groups = np.array([r["instance_id"] for r in sub])
+        n_groups = len(set(groups.tolist()))
+        if n_groups < n_splits:
+            continue
+        kf = GroupKFold(n_splits=n_splits)
+        idx_arr = np.arange(len(sub))
+        for train_i, test_i in kf.split(idx_arr, groups=groups):
+            test = [sub[i] for i in test_i]
+            train = [sub[i] for i in train_i]
             if len({r["resolved"] for r in test}) < 2:
                 continue
             auc, _, _ = fit_eval(train, test)
