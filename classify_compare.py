@@ -41,16 +41,18 @@ SHAPE_FEATURES = [
     "n_repo_edits", "n_edit_files", "edit_churn", "call_unique_ratio",
 ]
 
+THRASH_FEATURES = ["thrash_depth", "thrash_at_10", "repeat_rate", "window10_max"]
 PATCH_SHAPE_FEATURES = ["patch_lines", "patch_files"]
 
 SUBSETS = {
     "base":      SHAPE_FEATURES,
-    "+shape":    SHAPE_FEATURES + PATCH_SHAPE_FEATURES,
-    "+overlap":  SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_overlap"],
-    "+qwen":     SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim"],
-    "+mellum":   SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim_mellum"],
-    "+both LMs": SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim", "patch_sim_mellum"],
-    "+all":      SHAPE_FEATURES + PATCH_SHAPE_FEATURES + ["patch_overlap", "patch_sim", "patch_sim_mellum"],
+    "+thrash":   SHAPE_FEATURES + THRASH_FEATURES,
+    "+shape":    SHAPE_FEATURES + THRASH_FEATURES + PATCH_SHAPE_FEATURES,
+    "+overlap":  SHAPE_FEATURES + THRASH_FEATURES + PATCH_SHAPE_FEATURES + ["patch_overlap"],
+    "+qwen":     SHAPE_FEATURES + THRASH_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim"],
+    "+mellum":   SHAPE_FEATURES + THRASH_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim_mellum"],
+    "+both LMs": SHAPE_FEATURES + THRASH_FEATURES + PATCH_SHAPE_FEATURES + ["patch_sim", "patch_sim_mellum"],
+    "+all":      SHAPE_FEATURES + THRASH_FEATURES + PATCH_SHAPE_FEATURES + ["patch_overlap", "patch_sim", "patch_sim_mellum"],
 }
 
 
