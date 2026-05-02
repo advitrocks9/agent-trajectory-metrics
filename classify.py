@@ -1,9 +1,13 @@
 """Logistic regression on trajectory-shape features -> P(resolved).
 
 Cross-validation is leave-one-model-out: train on four models, evaluate on
-the fifth. This is a stricter test than within-model CV; it forces the
-features to carry signal that generalises across very different agent
-behaviours rather than memorising one model's quirks.
+the fifth. Stricter test than within-model CV in one sense (the held-out
+model is unseen) but it leaks task difficulty: all four models work the
+same 500 SWE-bench Verified instances, so the train and test folds share
+instance_ids, and trajectory shape (turn count, edits) is correlated with
+the underlying task. The within-model 5-fold GroupKFold in
+classify_prefix.py is the leakage-free comparison; the LOMO AUC here is
+therefore an upper bound on cross-model generalisation.
 
 GPT-5-2-Codex has no per-instance resolved flags on the leaderboard, so it
 sits out the labelled work but still gets predictions.
