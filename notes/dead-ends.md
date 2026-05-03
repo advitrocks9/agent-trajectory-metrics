@@ -28,5 +28,5 @@ Mellum-4B vs Qwen-Coder-1.5B is not a clean comparison; the +0.029 LOMO lift mig
 
 Two items were on this list as "skipped"; both shipped.
 
-* SWE-bench docker validation. `validate_eval.py` runs the SWE-bench harness on a 10-django sample per labelled model and writes `data/eval_validation.txt`. 39/39 of the labelled (model, instance) pairs match the leaderboard. The killer experiment also extends this to a 50-instance balanced subset across 4 models with per-test-pass-fraction features, see `data/execution.csv` and report.md finding 7.
+* SWE-bench docker validation. `validate_eval.py` runs the SWE-bench harness on a 10-django sample per labelled model and writes `data/eval_validation.txt`. 39/39 of the labelled (model, instance) pairs match the leaderboard. The same harness driver extends to a 50-instance balanced subset across 4 models with `tests_pass_frac` features, see `data/execution.csv` and report.md finding 7.
 * Calibration. `plot.py` builds a reliability diagram for the +all LOMO classifier (`plots/calibration.png`) and prints ECE = 0.027 over 10 equal-width bins.

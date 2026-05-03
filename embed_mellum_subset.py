@@ -5,12 +5,12 @@ it would take many hours under MPS. To keep the FIM-vs-raw comparison
 honest without re-embedding the world, this script:
 
   1. Reads `data/exec_subset.json` -- the 50 instance IDs picked for the
-     killer experiment.
+     test-pass-fraction subset (finding 7).
   2. Embeds the ground truth + 4-model predictions for each of those
      50 instances (250 patches), once with --input-format raw and once
      with --input-format fim, plus a separate 250-patch random sample
      drawn from the same 4-model pool, so the comparison covers more
-     than the killer-experiment subset.
+     than just the 50 picked instances.
 
 Output: `data/embeddings_mellum_subset_<format>.npy` plus index CSVs
 matching the existing `embeddings_mellum_index.csv` schema.
