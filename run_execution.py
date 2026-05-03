@@ -1,22 +1,20 @@
-"""Killer experiment: run the SWE-bench docker harness on a stratified
-50-instance subset across the four labelled models and extract per-test
-pass counts.
+"""Run the SWE-bench docker harness on a stratified 50-instance subset
+across the four labelled models and extract per-test pass counts.
 
-Why: the Task 2 classifier rests on diff-shape and embedding features.
-The implicit question reviewers will ask is "does any of this beat just
-running the test suite?". This script builds an `exec_<slug>.json` per
-model containing the harness verdict + tests-pass-fraction per
-instance, then `merge_execution.py` joins the four into
-`data/execution.csv` for use as a feature in classify_compare.
+The classifier in classify_compare.py rests on diff-shape and embedding
+features. The fair question is "does any of this beat just running the
+test suite?". This script builds an `exec_<slug>.json` per model with the
+harness verdict and tests-pass-fraction per instance; merge_execution.py
+joins the four into `data/execution.csv` for use as a feature.
 
 Usage:
   python run_execution.py predictions    # writes data/exec_predictions/<slug>.jsonl
   python run_execution.py harness        # runs swebench.harness.run_evaluation per model
   python run_execution.py merge          # builds data/execution.csv from the harness reports
 
-Why three steps: the harness can be slow (4-8 hours), so the predictions
-pass is cheap and idempotent and the harness pass can resume from
-cached image layers.
+Three steps because the harness is slow (4-8 hours). The predictions pass
+is cheap and idempotent; the harness pass can resume from cached image
+layers.
 """
 from __future__ import annotations
 
