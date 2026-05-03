@@ -73,7 +73,7 @@ python3 classify_compare.py      # ablation: shape / +overlap / +qwen / +mellum 
 python3 classify_prefix.py       # in-flight LOMO + within-model GroupKFold(instance_id)
 python3 plot.py                  # 6 PNGs under plots/, prints ECE
 python3 analysis.py              # every number cited in report.md
-# killer experiment, requires docker + ~50 GB free for SWE-bench images:
+# test-pass-frac feature on a 50-instance subset, requires docker + ~50 GB free:
 python3 run_execution.py predictions   # build per-model jsonl for the 50 stratified instances
 python3 run_execution.py harness       # invoke swebench.harness.run_evaluation per model
 python3 run_execution.py merge         # data/execution.csv with tests_pass_frac per (model, instance)
@@ -96,7 +96,7 @@ python3 run_execution.py merge         # data/execution.csv with tests_pass_frac
 | `classify_prefix.py`                       | in-flight LOMO + within-model 5-fold CV                       |
 | `plot.py`                                  | six PNGs under `plots/`                                       |
 | `analysis.py`, `validate_eval.py`          | reproduces the numbers / cross-checks docker vs leaderboard   |
-| `run_execution.py`                         | killer experiment driver: harness + tests-pass-frac feature   |
+| `run_execution.py`                         | docker harness driver + tests-pass-frac feature               |
 | `notes/dead-ends.md`                       | things I tried that did not work                              |
 | `notes/open-questions.md`                  | what I would chase next                                       |
 | `data/features_with_both_sim.csv`          | 2,500 rows × 31 columns (master features table)               |
