@@ -23,20 +23,20 @@ I ran a Python pipeline over all 2,500 trajectories (5 models * 500 instances). 
 | shape                             |    0.659 |     [0.602, 0.665] |
 | shape+thrash                      |    0.655 |     [0.596, 0.661] |
 | shape+thrash+patch shape          |    0.662 |     [0.608, 0.679] |
-| + Jaccard over (file, +/-, payload)| 0.762   |     [0.726, 0.786] |
+| + Jaccard over (file, +/-, payload)| 0.758   |     [0.721, 0.781] |
 | + Qwen2.5-Coder-1.5B cosine       |    0.737 |     [0.685, 0.758] |
 | + Mellum-4B-sft-py cosine         |    0.764 |     [0.721, 0.787] |
-| + Jaccard + Qwen + Mellum         |    0.778 |     [0.745, 0.806] |
+| + Jaccard + Qwen + Mellum         |    0.775 |     [0.742, 0.803] |
 
 Each "+X" row sits on top of the same shape+thrash+patch-shape baseline, so the +X delta is the named feature's contribution above that baseline. The earlier table presented these as additions to shape alone; thrash was silently in every row.
 
 Paired bootstrap on instance_id (n=2000, see `data/classify_compare.txt`):
 
 * Mellum vs Qwen,    +mellum - +qwen    = +0.031, 95% CI [+0.016, +0.046], excludes 0.
-* Mellum vs Jaccard, +mellum - +overlap = -0.001,  CI [-0.025, +0.023], includes 0.
-* Jaccard vs Qwen,   +overlap - +qwen   = +0.032,  CI [+0.004, +0.059], excludes 0.
+* Mellum vs Jaccard, +mellum - +overlap = +0.004, CI [-0.021, +0.029], includes 0.
+* Jaccard vs Qwen,   +overlap - +qwen   = +0.027, CI [-0.001, +0.054], includes 0.
 
-Mellum does beat Qwen, but Jaccard ties Mellum: the lift over Qwen is the same +0.032 either way, and a 30-line `(file, op, payload)` set comparison gets that for free. A retrieval-trained encoder (jina-v3, BGE) might widen the gap. So might a sandboxed test-pass signal, which is finding 7.
+Mellum beats Qwen. The indentation-aware Jaccard (now keyed on `(file, +/-, payload)` with leading whitespace preserved -- previous versions stripped indentation) ties Mellum within the paired CI; once indentation matters, the Jaccard edge over Qwen also crosses zero. The interpretation: a 30-line set comparison that respects Python-significant indentation captures most of what mean-pooled Mellum extracts from the same diff, and neither cleanly beats Qwen on this 2000-row pool. A retrieval-trained encoder (jina-v3, BGE) might widen the gap. So might a sandboxed test-pass signal, which is finding 7.
 
 **4. The within-model in-flight signal holds, the cross-model one doesn't.** Prefix-AUC at k=5 is 0.59 under LOMO; at k=50 it's 0.45 and at k=75 it's 0.41. Within-model `GroupKFold(instance_id)` (`classify_prefix.py`, 5 folds) holds 0.58-0.60 across k=5,10,20,30 and only drops at k=50 (0.59) and k=75 (small sample, fold count 10). Between-model transfer is what fails as trajectories grow long. I have not run the per-model threshold study a production scaffold would need; that's left for follow-up.
 
@@ -49,13 +49,13 @@ Mellum does beat Qwen, but Jaccard ties Mellum: the lift over Qwen is the same +
 | Subset                  | mean AUC | 95% CI         | per-fold (Opus5h, Gemini, MiniMax, Opus6) |
 |-------------------------|----------|----------------|-------------------------------------------|
 | shape (subset only)     | 0.510    | [0.459, 0.619] | 0.563 0.367 0.540 0.569                   |
-| +overlap                | 0.665    | [0.575, 0.759] | 0.705 0.596 0.690 0.669                   |
+| +overlap                | 0.657    | [0.568, 0.752] | 0.710 0.589 0.683 0.646                   |
 | +mellum                 | 0.592    | [0.509, 0.672] | 0.652 0.434 0.592 0.690                   |
-| +all                    | 0.642    | [0.546, 0.739] | 0.685 0.566 0.662 0.656                   |
+| +all                    | 0.633    | [0.539, 0.729] | 0.687 0.559 0.653 0.633                   |
 | +execution              | 0.578    | [0.495, 0.659] | 0.652 0.480 0.523 0.656                   |
-| +all+execution          | 0.652    | [0.555, 0.748] | 0.708 0.630 0.632 0.638                   |
+| +all+execution          | 0.642    | [0.548, 0.740] | 0.705 0.618 0.622 0.625                   |
 
-`tests_pass_frac` does add signal over shape alone (0.578 vs 0.510) but is weaker than `patch_overlap` (0.665) on this 192-row subset; paired delta `+execution` vs `+overlap` is -0.094, CI [-0.178, -0.014] (excludes 0). Stacking execution on top of all three patch features gives `+all+execution` 0.652 vs `+all` 0.642, paired delta +0.0094 with CI [-0.019, +0.037] (includes 0). On this subset the cheap patch-vs-gold Jaccard already captures what the expensive harness run adds; running the tests is redundant when you have the gold patch.
+`tests_pass_frac` does add signal over shape alone (0.578 vs 0.510) but is weaker than `patch_overlap` (0.657) on this 192-row subset; paired delta `+execution` vs `+overlap` is -0.086, CI [-0.172, -0.003] (excludes 0). Stacking execution on top of all three patch features gives `+all+execution` 0.642 vs `+all` 0.633, paired delta +0.010 with CI [-0.017, +0.036] (includes 0). On this subset the cheap patch-vs-gold Jaccard already captures what the expensive harness run adds; running the tests is redundant when you have the gold patch.
 
 **Validation.** I ran the SWE-bench docker harness locally on a 10-django sample per model (Gemini lost one report to a harness timeout, so 39 (model, instance) pairs across the four labelled models, `data/eval_validation.txt`); 39/39 matched the leaderboard. The leaderboard `resolved` field is the harness output itself, so on the validated subset the classifier predicts the harness verdict directly. The full 2000-row labels are taken on faith from the leaderboard. The classifier's outputs are calibrated to ECE = 0.027 over 10 equal-width bins (`plots/calibration.png`) and slightly overconfident in the 0.10-0.35 range, the regime where one would actually want to escalate or cut.
 

@@ -5,13 +5,13 @@ Feature subset           mean AUC          95% CI   per-fold (Opus5h, Gemini, Mi
   shape                     0.659  [0.602, 0.665]   0.704 0.549 0.700 0.683
   shape+thrash              0.655  [0.596, 0.661]   0.708 0.542 0.686 0.683
   shape+thrash+patch        0.662  [0.608, 0.679]   0.718 0.563 0.690 0.677
-  +overlap                  0.762  [0.726, 0.786]   0.811 0.715 0.767 0.756
+  +overlap                  0.758  [0.721, 0.781]   0.806 0.713 0.763 0.750
   +qwen                     0.737  [0.685, 0.758]   0.783 0.663 0.760 0.743
   +mellum                   0.764  [0.721, 0.787]   0.806 0.701 0.775 0.773
   +both LMs                 0.764  [0.719, 0.786]   0.805 0.701 0.778 0.770
-  +all                      0.778  [0.745, 0.806]   0.824 0.728 0.789 0.771
+  +all                      0.775  [0.742, 0.803]   0.818 0.727 0.787 0.770
 
 Paired AUC deltas, resampled by instance_id (n_boot=2000):
     +mellum vs +qwen     delta = +0.0311  CI [+0.0163, +0.0463]  excludes 0
-    +mellum vs +overlap  delta = -0.0006  CI [-0.0251, +0.0234]  includes 0
-   +overlap vs +qwen     delta = +0.0317  CI [+0.0044, +0.0594]  excludes 0
+    +mellum vs +overlap  delta = +0.0044  CI [-0.0208, +0.0287]  includes 0
+   +overlap vs +qwen     delta = +0.0267  CI [-0.0008, +0.0540]  includes 0

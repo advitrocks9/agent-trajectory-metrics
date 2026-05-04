@@ -3,14 +3,14 @@
 Feature subset           mean AUC          95% CI   per-fold (Opus5h, Gemini, MiniMax, Opus6)
 ----------------------------------------------------------------------------------------------------
   shape (subset only)       0.510  [0.459, 0.619]   0.563 0.367 0.540 0.569
-  +overlap                  0.665  [0.575, 0.759]   0.705 0.596 0.690 0.669
+  +overlap                  0.657  [0.568, 0.752]   0.710 0.589 0.683 0.646
   +mellum                   0.592  [0.509, 0.672]   0.652 0.434 0.592 0.690
-  +all                      0.642  [0.546, 0.739]   0.685 0.566 0.662 0.656
+  +all                      0.633  [0.539, 0.729]   0.687 0.559 0.653 0.633
   +execution                0.578  [0.495, 0.659]   0.652 0.480 0.523 0.656
-  +all+execution            0.652  [0.555, 0.748]   0.708 0.630 0.632 0.638
+  +all+execution            0.642  [0.548, 0.740]   0.705 0.618 0.622 0.625
 
 Paired AUC deltas (resampled by instance_id, n_boot=2000):
-    +execution         vs +all           delta = -0.0708  CI [-0.1540, +0.0108]  includes 0
-    +execution         vs +overlap       delta = -0.0938  CI [-0.1787, -0.0113]  excludes 0
+    +execution         vs +all           delta = -0.0627  CI [-0.1427, +0.0170]  includes 0
+    +execution         vs +overlap       delta = -0.0863  CI [-0.1715, -0.0031]  excludes 0
     +execution         vs +mellum        delta = -0.0118  CI [-0.0654, +0.0393]  includes 0
-    +all+execution     vs +all           delta = +0.0098  CI [-0.0170, +0.0372]  includes 0
+    +all+execution     vs +all           delta = +0.0102  CI [-0.0168, +0.0357]  includes 0

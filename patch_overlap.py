@@ -42,7 +42,10 @@ def changed_lines(diff_text: str) -> set[tuple[str, str, str]]:
 
     Tracks the current `+++ b/<path>` so cross-file payload collisions
     don't inflate the Jaccard. Keeps `+` and `-` distinct so a deletion
-    and an addition of the same line don't collapse together.
+    and an addition of the same line don't collapse together. Leading
+    indentation is preserved in the payload (only trailing whitespace
+    is stripped) -- in Python, indentation is semantic, so a predicted
+    line at the wrong indentation is not the same line.
     """
     out: set[tuple[str, str, str]] = set()
     cur_file = ""
@@ -56,8 +59,9 @@ def changed_lines(diff_text: str) -> set[tuple[str, str, str]]:
             continue
         if not ln or ln[0] not in "+-":
             continue
-        body = ln[1:].strip()
-        if not body:
+        body = ln[1:].rstrip()
+        if not body.strip():
+            # Pure-whitespace edits don't carry information.
             continue
         out.add((cur_file, ln[0], body))
     return out
