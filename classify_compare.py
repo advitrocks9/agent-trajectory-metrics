@@ -22,10 +22,11 @@ weren't there, which over-credited the LM / Jaccard rows.)
 
 For each subset I report mean LOMO AUC across 4 folds plus the 95% CI
 from a bootstrap of the pooled out-of-fold predictions (1,000 resamples,
-percentile method). I also include a paired per-instance bootstrap of
-the Mellum-vs-Qwen AUC delta because their CIs overlap and the earlier
-"Mellum edges Qwen" framing rested on overlapping marginal CIs, which
-doesn't actually establish a difference.
+percentile method, resampled by `instance_id` so the 4 model rows for
+each task move together). I also include a paired per-instance bootstrap
+of the Mellum-vs-Qwen AUC delta because their CIs overlap and the
+earlier "Mellum edges Qwen" framing rested on overlapping marginal CIs,
+which doesn't actually establish a difference.
 """
 from __future__ import annotations
 
@@ -112,14 +113,27 @@ def pooled_predictions(
 def lomo_auc(
     rows: list[dict], features: list[str], n_boot: int = 1000, seed: int = 1
 ) -> tuple[float, tuple[float, float], list[float], np.ndarray, np.ndarray, np.ndarray]:
-    """Mean LOMO AUC + 95% bootstrap CI on the pooled out-of-fold predictions."""
+    """Mean LOMO AUC + 95% bootstrap CI on the pooled out-of-fold predictions.
+
+    The bootstrap resamples unique `instance_id` clusters (each contributes
+    its 4 model rows together), mirroring `paired_delta_ci`. The earlier
+    version sampled rows independently, which understates variance because
+    same-instance rows across the 4 models share task difficulty.
+    """
     y, p, iids, fold_aucs = pooled_predictions(rows, features)
     rng = np.random.default_rng(seed)
-    n = len(y)
+    by_iid: dict[str, list[int]] = {}
+    for i, iid in enumerate(iids):
+        by_iid.setdefault(iid, []).append(i)
+    keys = list(by_iid.keys())
     boot = np.empty(n_boot)
     for b in range(n_boot):
-        idx = rng.integers(0, n, n)
-        boot[b] = roc_auc_score(y[idx], p[idx])
+        sample_keys = rng.choice(len(keys), size=len(keys), replace=True)
+        idx = []
+        for k in sample_keys:
+            idx.extend(by_iid[keys[k]])
+        idx_arr = np.array(idx)
+        boot[b] = roc_auc_score(y[idx_arr], p[idx_arr])
     lo, hi = np.quantile(boot, [0.025, 0.975])
     return float(np.mean(fold_aucs)), (float(lo), float(hi)), fold_aucs, y, p, iids
 

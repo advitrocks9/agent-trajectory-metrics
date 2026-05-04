@@ -16,17 +16,17 @@ I ran a Python pipeline over all 2,500 trajectories (5 models * 500 instances). 
 
 **2. Conditional resolve probability collapses with depth, at very different rates.** `S_m(k) = P(resolved | T >= k)` for Claude 4.5 Opus high goes 77% -> 46% -> 9% -> 0% at `k = 0, 50, 75, 100`. Gemini 3 Flash holds 76% -> 73% -> 68% -> 50% over the same range (`plots/survival.png`, pointwise 95% bootstrap CIs from 1,000 resamples per k). The bands are pointwise marginal CIs, not a simultaneous band; the cross-curve claim ("Claude 4.5 collapses faster than Gemini") is informal in that strict sense.
 
-**3. Post-hoc diagnostic on patch-vs-gold similarity.** This subsection asks: once you have the submitted patch and the SWE-bench gold patch, how well does patch-vs-gold similarity predict the `resolved` flag? Every "+X" feature here is computed against the gold patch (Jaccard of changed-line triples, Qwen cosine, Mellum cosine), so this is a diagnostic of how predictable `resolved` is once both patches are in hand, not an in-flight classifier. L2-regularised LR with leave-one-model-out across the four labelled models, bootstrap CIs over pooled out-of-fold predictions:
+**3. Post-hoc diagnostic on patch-vs-gold similarity.** This subsection asks: once you have the submitted patch and the SWE-bench gold patch, how well does patch-vs-gold similarity predict the `resolved` flag? Every "+X" feature here is computed against the gold patch (Jaccard of changed-line triples, Qwen cosine, Mellum cosine), so this is a diagnostic of how predictable `resolved` is once both patches are in hand, not an in-flight classifier. L2-regularised LR with leave-one-model-out across the four labelled models, bootstrap CIs over pooled out-of-fold predictions, resampled by `instance_id` so the 4 model rows for each task move together:
 
 | Feature subset                    | Mean AUC |       95% CI       |
 | --------------------------------- | -------: | -----------------: |
-| shape                             |    0.659 |     [0.604, 0.664] |
-| shape+thrash                      |    0.655 |     [0.600, 0.660] |
-| shape+thrash+patch shape          |    0.662 |     [0.615, 0.674] |
-| + Jaccard over (file, +/-, payload)| 0.762   |     [0.732, 0.779] |
-| + Qwen2.5-Coder-1.5B cosine       |    0.737 |     [0.697, 0.750] |
-| + Mellum-4B-sft-py cosine         |    0.764 |     [0.731, 0.780] |
-| + Jaccard + Qwen + Mellum         |    0.778 |     [0.753, 0.797] |
+| shape                             |    0.659 |     [0.602, 0.665] |
+| shape+thrash                      |    0.655 |     [0.596, 0.661] |
+| shape+thrash+patch shape          |    0.662 |     [0.608, 0.679] |
+| + Jaccard over (file, +/-, payload)| 0.762   |     [0.726, 0.786] |
+| + Qwen2.5-Coder-1.5B cosine       |    0.737 |     [0.685, 0.758] |
+| + Mellum-4B-sft-py cosine         |    0.764 |     [0.721, 0.787] |
+| + Jaccard + Qwen + Mellum         |    0.778 |     [0.745, 0.806] |
 
 Each "+X" row sits on top of the same shape+thrash+patch-shape baseline, so the +X delta is the named feature's contribution above that baseline. The earlier table presented these as additions to shape alone; thrash was silently in every row.
 
@@ -48,12 +48,12 @@ Mellum does beat Qwen, but Jaccard ties Mellum: the lift over Qwen is the same +
 
 | Subset                  | mean AUC | 95% CI         | per-fold (Opus5h, Gemini, MiniMax, Opus6) |
 |-------------------------|----------|----------------|-------------------------------------------|
-| shape (subset only)     | 0.510    | [0.451, 0.613] | 0.563 0.367 0.540 0.569                   |
-| +overlap                | 0.665    | [0.592, 0.738] | 0.705 0.596 0.690 0.669                   |
-| +mellum                 | 0.592    | [0.503, 0.662] | 0.652 0.434 0.592 0.690                   |
-| +all                    | 0.642    | [0.569, 0.717] | 0.685 0.566 0.662 0.656                   |
-| +execution              | 0.578    | [0.488, 0.654] | 0.652 0.480 0.523 0.656                   |
-| +all+execution          | 0.652    | [0.578, 0.728] | 0.708 0.630 0.632 0.638                   |
+| shape (subset only)     | 0.510    | [0.459, 0.619] | 0.563 0.367 0.540 0.569                   |
+| +overlap                | 0.665    | [0.575, 0.759] | 0.705 0.596 0.690 0.669                   |
+| +mellum                 | 0.592    | [0.509, 0.672] | 0.652 0.434 0.592 0.690                   |
+| +all                    | 0.642    | [0.546, 0.739] | 0.685 0.566 0.662 0.656                   |
+| +execution              | 0.578    | [0.495, 0.659] | 0.652 0.480 0.523 0.656                   |
+| +all+execution          | 0.652    | [0.555, 0.748] | 0.708 0.630 0.632 0.638                   |
 
 `tests_pass_frac` does add signal over shape alone (0.578 vs 0.510) but is weaker than `patch_overlap` (0.665) on this 192-row subset; paired delta `+execution` vs `+overlap` is -0.094, CI [-0.178, -0.014] (excludes 0). Stacking execution on top of all three patch features gives `+all+execution` 0.652 vs `+all` 0.642, paired delta +0.0094 with CI [-0.019, +0.037] (includes 0). On this subset the cheap patch-vs-gold Jaccard already captures what the expensive harness run adds; running the tests is redundant when you have the gold patch.
 
