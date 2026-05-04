@@ -1,6 +1,8 @@
-"""Survival curves with bootstrap CIs + a feature-coefficient bar chart.
+"""Conditional resolve probability + a feature-coefficient bar chart.
 
-Outputs PNGs under plots/. Uses matplotlib only.
+The depth panel is `P(resolve | T >= k)` with pointwise bootstrap CIs --
+not a Kaplan-Meier survival estimator (no censoring of `LimitsExceeded`
+trajectories). Outputs PNGs under plots/. Uses matplotlib only.
 """
 from __future__ import annotations
 
@@ -43,19 +45,21 @@ def ece(probs: np.ndarray, labels: np.ndarray, bins: int = 10) -> float:
     return float(error)
 
 
-def survival_curve(
+def conditional_resolve_curve(
     turns: np.ndarray, resolved: np.ndarray, ks: np.ndarray, n_boot: int = 1000, seed: int = 1
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """For each k in ks, return (point estimate, lo, hi, n_at_risk).
 
-    P(resolve | reached turn k) at the *marginal* level: bootstrap is
+    `P(resolve | reached turn k)` at the marginal level: bootstrap is
     over instances at each k independently, so the bands are pointwise
     95% CIs, not a simultaneous band. That makes statements about the
-    *whole curve* (e.g. "Claude 4.5 Opus collapses faster than Gemini")
-    informal rather than statistically tested. Kaplan-Meier with
-    Greenwood's formula would give a proper survival band; I left that
-    for follow-up because the practical statement here is point-estimate
-    plus per-k confidence.
+    whole curve (e.g. "Claude 4.5 Opus collapses faster than Gemini")
+    informal rather than statistically tested. This is a conditional
+    mean, not a Kaplan-Meier survival estimator: trajectories that hit
+    the step cap (`exit_status == "LimitsExceeded"`) are treated as
+    observed failures at their stopping turn, not censored. KM with
+    `LimitsExceeded` as the censor and `resolved == True` as the event
+    would be the actuarial construction; I left it for follow-up.
     """
     rng = np.random.default_rng(seed)
     n = len(turns)
@@ -89,14 +93,16 @@ def main() -> None:
     for r in rows:
         by_model[r["model"]].append(r)
 
-    # Plot 1: survival curves with bootstrap 95% CIs
+    # Plot 1: conditional resolve probability with pointwise bootstrap 95% CIs.
+    # NB: not a Kaplan-Meier survival fit -- LimitsExceeded is treated as an
+    # observed failure at the stopping turn, not censored.
     fig, ax = plt.subplots(figsize=(7, 4.5))
     ks = np.arange(0, 121, 5)
     for m in LABELLED:
         rs = [r for r in by_model[m] if r["resolved"] in {"True", "False"}]
         turns = np.array([int(r["n_assistant"]) for r in rs])
         resolved = np.array([1 if r["resolved"] == "True" else 0 for r in rs])
-        pt, lo, hi, _ = survival_curve(turns, resolved, ks)
+        pt, lo, hi, _ = conditional_resolve_curve(turns, resolved, ks)
         ax.plot(ks, pt, label=m, color=COLOURS[m], linewidth=2)
         ax.fill_between(ks, lo, hi, color=COLOURS[m], alpha=0.18, linewidth=0)
     ax.set_xlabel("turn count k (assistant messages)")
