@@ -52,7 +52,7 @@ Total messages:     67
 
 The brief's example output stops at `Total: 66`. Real mini-SWE-agent v2 trajectories carry one `exit` message holding the final patch. The tool surfaces it as its own row instead of folding it into the assistant or tool count, because that is what the underlying message actually is.
 
-## End-to-end pipeline
+## How to rerun
 
 ```bash
 python3 download.py              # 5 × 500 trajectories from public S3 (~1.3 GB)
