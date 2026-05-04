@@ -20,11 +20,15 @@ The brief asked for three things:
 | Claude 4.6 Opus      |  75.6% |  $0.55 |      $0.73 |        23 |
 | GPT-5-2-Codex        |  72.8% |  $0.45 |      $0.62 |        31 |
 
-Top five score within 4.2 points on pass@1; per-instance cost spans 10x; ranked by cost-per-resolved-task the leaderboard inverts. A logistic regression on trajectory shape plus patch-content features predicts the resolved flag at LOMO mean AUC **0.78**, 95% bootstrap CI [0.75, 0.80]. The strongest single patch-content feature is the **Jaccard overlap of changed diff lines** keyed by `(file, +/-, payload)`: 0.762 vs Mellum-4B-sft-python 0.764 (paired delta -0.001, CI [-0.025, +0.023], includes 0) and Qwen-Coder-1.5B 0.737 (paired delta vs Mellum +0.031, CI [+0.016, +0.046], excludes 0). Mellum beats Qwen, but Jaccard ties Mellum. Full writeup in [`report.md`](./report.md).
+Top five score within 4.2 points on pass@1; per-instance cost spans 10x; ranked by cost-per-resolved-task the leaderboard inverts (MiniMax $0.10 vs Claude 4.5 Opus high $0.98). The conditional resolve probability `P(resolved | T >= k)` collapses very differently across models: Claude 4.5 Opus high goes 77% -> 9% over `k = 0, 75`; Gemini 3 Flash holds 76% -> 68% across the same range. Validated against the SWE-bench docker harness on a 10-django sample per model: 39/39 matched the leaderboard.
 
 ![Conditional resolve probability vs depth](./plots/survival.png)
 
-`S_m(k) = P(resolved | T >= k)` collapses very differently across models. Claude 4.5 Opus high goes 77% -> 9% over `k = 0, 75`; Gemini 3 Flash holds 76% -> 68% across the same range. Validated against the SWE-bench docker harness on a 10-django sample per model: 39/39 matched the leaderboard.
+The in-flight prefix classifier (logistic regression on the first k assistant turns, no patch features) holds 0.58-0.60 AUC under `GroupKFold(instance_id)` within model up to k=20, then dips to 0.57 at k=30 and collapses to 0.39 at k=75. Same classifier under leave-one-model-out decays from 0.59 at k=5 to 0.41 at k=75: cross-model transfer is what breaks. Full writeup in [`report.md`](./report.md).
+
+### Post-hoc diagnostic: how predictable is `resolved` once you have the final patch?
+
+A separate logistic regression on trajectory shape plus three patch-vs-gold similarity features predicts the resolved flag at LOMO mean AUC **0.78**, 95% bootstrap CI [0.75, 0.80]. This number uses the gold SWE-bench patch as input to compute Jaccard overlap and Qwen / Mellum cosine to ground truth, so it is a diagnostic of how well patch-vs-gold similarity correlates with `resolved` in-distribution, not an in-flight classifier. The strongest single patch-content feature is the Jaccard overlap of changed diff lines keyed by `(file, +/-, payload)`: 0.762 vs Mellum-4B-sft-python 0.764 (paired delta -0.001, CI [-0.025, +0.023], includes 0) and Qwen-Coder-1.5B 0.737 (paired delta vs Mellum +0.031, CI [+0.016, +0.046], excludes 0). Mellum beats Qwen, but a 30-line Jaccard baseline ties Mellum.
 
 ## Run
 
