@@ -1,0 +1,201 @@
+model,instance_id,harness_resolved,ftp_success,ftp_failure,ptp_success,ptp_failure,tests_pass_frac
+Claude 4.5 Opus high,astropy__astropy-14365,False,0,1,8,0,0.8889
+Claude 4.5 Opus high,django__django-10097,False,431,7,1432,0,0.9963
+Claude 4.5 Opus high,django__django-10554,,,,,,
+Claude 4.5 Opus high,django__django-10880,True,1,0,55,0,1.0000
+Claude 4.5 Opus high,django__django-10914,True,1,0,98,0,1.0000
+Claude 4.5 Opus high,django__django-10973,True,5,0,0,0,1.0000
+Claude 4.5 Opus high,django__django-10999,False,0,2,10,0,0.8333
+Claude 4.5 Opus high,django__django-11066,True,1,0,3,0,1.0000
+Claude 4.5 Opus high,django__django-11087,False,0,1,41,0,0.9762
+Claude 4.5 Opus high,django__django-11138,True,1,0,73,0,1.0000
+Claude 4.5 Opus high,django__django-11141,False,1,0,23,1,0.9600
+Claude 4.5 Opus high,django__django-11400,False,4,2,58,0,0.9688
+Claude 4.5 Opus high,django__django-11433,True,1,0,142,0,1.0000
+Claude 4.5 Opus high,django__django-11728,True,2,0,44,0,1.0000
+Claude 4.5 Opus high,django__django-11790,True,2,0,77,0,1.0000
+Claude 4.5 Opus high,django__django-11815,False,1,1,44,0,0.9783
+Claude 4.5 Opus high,pylint-dev__pylint-4551,False,0,10,0,0,0.0000
+Claude 4.5 Opus high,pylint-dev__pylint-4604,False,0,21,0,0,0.0000
+Claude 4.5 Opus high,pylint-dev__pylint-4661,False,0,1,0,0,0.0000
+Claude 4.5 Opus high,pylint-dev__pylint-4970,True,1,0,17,0,1.0000
+Claude 4.5 Opus high,pylint-dev__pylint-6386,False,0,1,0,7,0.0000
+Claude 4.5 Opus high,pylint-dev__pylint-6528,False,0,4,35,136,0.2000
+Claude 4.5 Opus high,pylint-dev__pylint-6903,False,0,1,4,4,0.4444
+Claude 4.5 Opus high,pylint-dev__pylint-7080,False,0,1,4,116,0.0331
+Claude 4.5 Opus high,pylint-dev__pylint-7277,,,,,,
+Claude 4.5 Opus high,sphinx-doc__sphinx-10323,False,1,0,38,2,0.9512
+Claude 4.5 Opus high,sphinx-doc__sphinx-10435,False,0,1,74,0,0.9867
+Claude 4.5 Opus high,sphinx-doc__sphinx-10449,True,1,0,30,0,1.0000
+Claude 4.5 Opus high,sphinx-doc__sphinx-10466,True,1,0,6,0,1.0000
+Claude 4.5 Opus high,sphinx-doc__sphinx-10614,False,0,1,5,0,0.8333
+Claude 4.5 Opus high,sphinx-doc__sphinx-10673,True,1,0,9,0,1.0000
+Claude 4.5 Opus high,sphinx-doc__sphinx-11510,False,0,2,7,0,0.7778
+Claude 4.5 Opus high,sphinx-doc__sphinx-7454,False,0,1,0,27,0.0000
+Claude 4.5 Opus high,sphinx-doc__sphinx-7985,False,0,2,0,3,0.0000
+Claude 4.5 Opus high,sphinx-doc__sphinx-8056,False,0,1,0,40,0.0000
+Claude 4.5 Opus high,sphinx-doc__sphinx-8548,False,0,1,0,5,0.0000
+Claude 4.5 Opus high,sphinx-doc__sphinx-8595,False,0,1,0,0,0.0000
+Claude 4.5 Opus high,sympy__sympy-11618,True,1,0,4,0,1.0000
+Claude 4.5 Opus high,sympy__sympy-12096,True,1,0,43,0,1.0000
+Claude 4.5 Opus high,sympy__sympy-12419,True,1,0,25,0,1.0000
+Claude 4.5 Opus high,sympy__sympy-12489,True,1,0,8,0,1.0000
+Claude 4.5 Opus high,sympy__sympy-13031,False,0,1,9,0,0.9000
+Claude 4.5 Opus high,sympy__sympy-13798,False,0,1,102,0,0.9903
+Claude 4.5 Opus high,sympy__sympy-13852,False,0,1,4,0,0.8000
+Claude 4.5 Opus high,sympy__sympy-13877,False,0,1,110,0,0.9910
+Claude 4.5 Opus high,sympy__sympy-14248,False,2,0,432,1,0.9977
+Claude 4.5 Opus high,sympy__sympy-14976,False,0,1,13,0,0.9286
+Claude 4.5 Opus high,sympy__sympy-15599,False,0,1,80,0,0.9877
+Claude 4.5 Opus high,sympy__sympy-15875,False,0,1,80,0,0.9877
+Claude 4.5 Opus high,sympy__sympy-18211,True,1,0,54,0,1.0000
+Gemini 3 Flash high,astropy__astropy-14365,True,1,0,8,0,1.0000
+Gemini 3 Flash high,django__django-10097,False,438,0,1427,5,0.9973
+Gemini 3 Flash high,django__django-10554,False,0,2,23,0,0.9200
+Gemini 3 Flash high,django__django-10880,True,1,0,55,0,1.0000
+Gemini 3 Flash high,django__django-10914,True,1,0,98,0,1.0000
+Gemini 3 Flash high,django__django-10973,True,5,0,0,0,1.0000
+Gemini 3 Flash high,django__django-10999,False,0,2,10,0,0.8333
+Gemini 3 Flash high,django__django-11066,True,1,0,3,0,1.0000
+Gemini 3 Flash high,django__django-11087,False,0,1,41,0,0.9762
+Gemini 3 Flash high,django__django-11138,True,1,0,73,0,1.0000
+Gemini 3 Flash high,django__django-11141,True,1,0,24,0,1.0000
+Gemini 3 Flash high,django__django-11400,True,6,0,58,0,1.0000
+Gemini 3 Flash high,django__django-11433,False,0,1,141,1,0.9860
+Gemini 3 Flash high,django__django-11728,True,2,0,44,0,1.0000
+Gemini 3 Flash high,django__django-11790,False,0,2,77,0,0.9747
+Gemini 3 Flash high,django__django-11815,False,0,2,44,0,0.9565
+Gemini 3 Flash high,pylint-dev__pylint-4551,False,0,10,0,0,0.0000
+Gemini 3 Flash high,pylint-dev__pylint-4604,False,0,21,0,0,0.0000
+Gemini 3 Flash high,pylint-dev__pylint-4661,False,0,1,0,0,0.0000
+Gemini 3 Flash high,pylint-dev__pylint-4970,True,1,0,17,0,1.0000
+Gemini 3 Flash high,pylint-dev__pylint-6386,False,0,1,0,7,0.0000
+Gemini 3 Flash high,pylint-dev__pylint-6528,False,0,4,35,136,0.2000
+Gemini 3 Flash high,pylint-dev__pylint-6903,False,0,1,4,4,0.4444
+Gemini 3 Flash high,pylint-dev__pylint-7080,False,0,1,4,116,0.0331
+Gemini 3 Flash high,pylint-dev__pylint-7277,,,,,,
+Gemini 3 Flash high,sphinx-doc__sphinx-10323,False,1,0,38,2,0.9512
+Gemini 3 Flash high,sphinx-doc__sphinx-10435,False,0,1,74,0,0.9867
+Gemini 3 Flash high,sphinx-doc__sphinx-10449,True,1,0,30,0,1.0000
+Gemini 3 Flash high,sphinx-doc__sphinx-10466,True,1,0,6,0,1.0000
+Gemini 3 Flash high,sphinx-doc__sphinx-10614,False,0,1,5,0,0.8333
+Gemini 3 Flash high,sphinx-doc__sphinx-10673,True,1,0,9,0,1.0000
+Gemini 3 Flash high,sphinx-doc__sphinx-11510,False,1,1,7,0,0.8889
+Gemini 3 Flash high,sphinx-doc__sphinx-7454,False,0,1,0,27,0.0000
+Gemini 3 Flash high,sphinx-doc__sphinx-7985,False,0,2,0,3,0.0000
+Gemini 3 Flash high,sphinx-doc__sphinx-8056,False,0,1,0,40,0.0000
+Gemini 3 Flash high,sphinx-doc__sphinx-8548,False,0,1,0,5,0.0000
+Gemini 3 Flash high,sphinx-doc__sphinx-8595,False,0,1,0,0,0.0000
+Gemini 3 Flash high,sympy__sympy-11618,True,1,0,4,0,1.0000
+Gemini 3 Flash high,sympy__sympy-12096,True,1,0,43,0,1.0000
+Gemini 3 Flash high,sympy__sympy-12419,True,1,0,25,0,1.0000
+Gemini 3 Flash high,sympy__sympy-12489,True,1,0,8,0,1.0000
+Gemini 3 Flash high,sympy__sympy-13031,True,1,0,9,0,1.0000
+Gemini 3 Flash high,sympy__sympy-13798,False,0,1,102,0,0.9903
+Gemini 3 Flash high,sympy__sympy-13852,False,0,1,4,0,0.8000
+Gemini 3 Flash high,sympy__sympy-13877,True,1,0,110,0,1.0000
+Gemini 3 Flash high,sympy__sympy-14248,True,2,0,433,0,1.0000
+Gemini 3 Flash high,sympy__sympy-14976,False,0,1,13,0,0.9286
+Gemini 3 Flash high,sympy__sympy-15599,True,1,0,80,0,1.0000
+Gemini 3 Flash high,sympy__sympy-15875,False,0,1,80,0,0.9877
+Gemini 3 Flash high,sympy__sympy-18211,False,0,1,54,0,0.9818
+MiniMax M2.5 high,astropy__astropy-14365,True,1,0,8,0,1.0000
+MiniMax M2.5 high,django__django-10097,False,431,7,1427,5,0.9936
+MiniMax M2.5 high,django__django-10554,False,0,2,23,0,0.9200
+MiniMax M2.5 high,django__django-10880,True,1,0,55,0,1.0000
+MiniMax M2.5 high,django__django-10914,True,1,0,98,0,1.0000
+MiniMax M2.5 high,django__django-10973,True,5,0,0,0,1.0000
+MiniMax M2.5 high,django__django-10999,False,0,2,10,0,0.8333
+MiniMax M2.5 high,django__django-11066,True,1,0,3,0,1.0000
+MiniMax M2.5 high,django__django-11087,False,0,1,41,0,0.9762
+MiniMax M2.5 high,django__django-11138,False,0,1,73,0,0.9865
+MiniMax M2.5 high,django__django-11141,False,1,0,23,1,0.9600
+MiniMax M2.5 high,django__django-11400,False,4,2,58,0,0.9688
+MiniMax M2.5 high,django__django-11433,False,0,1,141,1,0.9860
+MiniMax M2.5 high,django__django-11728,False,1,1,43,1,0.9565
+MiniMax M2.5 high,django__django-11790,False,0,2,77,0,0.9747
+MiniMax M2.5 high,django__django-11815,True,2,0,44,0,1.0000
+MiniMax M2.5 high,pylint-dev__pylint-4551,False,0,10,0,0,0.0000
+MiniMax M2.5 high,pylint-dev__pylint-4604,False,0,21,0,0,0.0000
+MiniMax M2.5 high,pylint-dev__pylint-4661,False,0,1,0,0,0.0000
+MiniMax M2.5 high,pylint-dev__pylint-4970,False,0,1,17,0,0.9444
+MiniMax M2.5 high,pylint-dev__pylint-6386,False,0,1,0,7,0.0000
+MiniMax M2.5 high,pylint-dev__pylint-6528,False,0,4,35,136,0.2000
+MiniMax M2.5 high,pylint-dev__pylint-6903,False,0,1,4,4,0.4444
+MiniMax M2.5 high,pylint-dev__pylint-7080,False,0,1,4,116,0.0331
+MiniMax M2.5 high,pylint-dev__pylint-7277,,,,,,
+MiniMax M2.5 high,sphinx-doc__sphinx-10323,False,1,0,38,2,0.9512
+MiniMax M2.5 high,sphinx-doc__sphinx-10435,False,0,1,74,0,0.9867
+MiniMax M2.5 high,sphinx-doc__sphinx-10449,True,1,0,30,0,1.0000
+MiniMax M2.5 high,sphinx-doc__sphinx-10466,True,1,0,6,0,1.0000
+MiniMax M2.5 high,sphinx-doc__sphinx-10614,False,0,1,5,0,0.8333
+MiniMax M2.5 high,sphinx-doc__sphinx-10673,False,0,1,9,0,0.9000
+MiniMax M2.5 high,sphinx-doc__sphinx-11510,False,1,1,7,0,0.8889
+MiniMax M2.5 high,sphinx-doc__sphinx-7454,False,0,1,0,27,0.0000
+MiniMax M2.5 high,sphinx-doc__sphinx-7985,False,0,2,0,3,0.0000
+MiniMax M2.5 high,sphinx-doc__sphinx-8056,False,0,1,0,40,0.0000
+MiniMax M2.5 high,sphinx-doc__sphinx-8548,False,0,1,0,5,0.0000
+MiniMax M2.5 high,sphinx-doc__sphinx-8595,False,0,1,0,0,0.0000
+MiniMax M2.5 high,sympy__sympy-11618,True,1,0,4,0,1.0000
+MiniMax M2.5 high,sympy__sympy-12096,True,1,0,43,0,1.0000
+MiniMax M2.5 high,sympy__sympy-12419,True,1,0,25,0,1.0000
+MiniMax M2.5 high,sympy__sympy-12489,False,0,1,4,4,0.4444
+MiniMax M2.5 high,sympy__sympy-13031,False,0,1,3,6,0.3000
+MiniMax M2.5 high,sympy__sympy-13798,False,0,1,100,2,0.9709
+MiniMax M2.5 high,sympy__sympy-13852,True,1,0,4,0,1.0000
+MiniMax M2.5 high,sympy__sympy-13877,True,1,0,110,0,1.0000
+MiniMax M2.5 high,sympy__sympy-14248,True,2,0,433,0,1.0000
+MiniMax M2.5 high,sympy__sympy-14976,True,1,0,13,0,1.0000
+MiniMax M2.5 high,sympy__sympy-15599,True,1,0,80,0,1.0000
+MiniMax M2.5 high,sympy__sympy-15875,True,1,0,80,0,1.0000
+MiniMax M2.5 high,sympy__sympy-18211,False,0,1,54,0,0.9818
+Claude 4.6 Opus,astropy__astropy-14365,True,1,0,8,0,1.0000
+Claude 4.6 Opus,django__django-10097,False,431,7,1427,5,0.9936
+Claude 4.6 Opus,django__django-10554,,,,,,
+Claude 4.6 Opus,django__django-10880,True,1,0,55,0,1.0000
+Claude 4.6 Opus,django__django-10914,True,1,0,98,0,1.0000
+Claude 4.6 Opus,django__django-10973,False,4,1,0,0,0.8000
+Claude 4.6 Opus,django__django-10999,False,0,2,10,0,0.8333
+Claude 4.6 Opus,django__django-11066,True,1,0,3,0,1.0000
+Claude 4.6 Opus,django__django-11087,False,0,1,41,0,0.9762
+Claude 4.6 Opus,django__django-11138,True,1,0,73,0,1.0000
+Claude 4.6 Opus,django__django-11141,False,1,0,23,1,0.9600
+Claude 4.6 Opus,django__django-11400,False,4,2,58,0,0.9688
+Claude 4.6 Opus,django__django-11433,True,1,0,142,0,1.0000
+Claude 4.6 Opus,django__django-11728,True,2,0,44,0,1.0000
+Claude 4.6 Opus,django__django-11790,True,2,0,77,0,1.0000
+Claude 4.6 Opus,django__django-11815,True,2,0,44,0,1.0000
+Claude 4.6 Opus,pylint-dev__pylint-4551,False,0,10,0,0,0.0000
+Claude 4.6 Opus,pylint-dev__pylint-4604,False,0,21,0,0,0.0000
+Claude 4.6 Opus,pylint-dev__pylint-4661,False,0,1,0,0,0.0000
+Claude 4.6 Opus,pylint-dev__pylint-4970,False,0,1,17,0,0.9444
+Claude 4.6 Opus,pylint-dev__pylint-6386,False,0,1,0,7,0.0000
+Claude 4.6 Opus,pylint-dev__pylint-6528,False,0,4,35,136,0.2000
+Claude 4.6 Opus,pylint-dev__pylint-6903,False,0,1,4,4,0.4444
+Claude 4.6 Opus,pylint-dev__pylint-7080,False,0,1,4,116,0.0331
+Claude 4.6 Opus,pylint-dev__pylint-7277,,,,,,
+Claude 4.6 Opus,sphinx-doc__sphinx-10323,False,1,0,38,2,0.9512
+Claude 4.6 Opus,sphinx-doc__sphinx-10435,False,0,1,74,0,0.9867
+Claude 4.6 Opus,sphinx-doc__sphinx-10449,True,1,0,30,0,1.0000
+Claude 4.6 Opus,sphinx-doc__sphinx-10466,True,1,0,6,0,1.0000
+Claude 4.6 Opus,sphinx-doc__sphinx-10614,False,0,1,5,0,0.8333
+Claude 4.6 Opus,sphinx-doc__sphinx-10673,True,1,0,9,0,1.0000
+Claude 4.6 Opus,sphinx-doc__sphinx-11510,False,1,1,7,0,0.8889
+Claude 4.6 Opus,sphinx-doc__sphinx-7454,False,0,1,0,27,0.0000
+Claude 4.6 Opus,sphinx-doc__sphinx-7985,False,0,2,0,3,0.0000
+Claude 4.6 Opus,sphinx-doc__sphinx-8056,False,0,1,0,40,0.0000
+Claude 4.6 Opus,sphinx-doc__sphinx-8548,False,0,1,0,5,0.0000
+Claude 4.6 Opus,sphinx-doc__sphinx-8595,False,0,1,0,0,0.0000
+Claude 4.6 Opus,sympy__sympy-11618,True,1,0,4,0,1.0000
+Claude 4.6 Opus,sympy__sympy-12096,True,1,0,43,0,1.0000
+Claude 4.6 Opus,sympy__sympy-12419,True,1,0,25,0,1.0000
+Claude 4.6 Opus,sympy__sympy-12489,True,1,0,8,0,1.0000
+Claude 4.6 Opus,sympy__sympy-13031,,,,,,
+Claude 4.6 Opus,sympy__sympy-13798,False,0,1,102,0,0.9903
+Claude 4.6 Opus,sympy__sympy-13852,False,0,1,4,0,0.8000
+Claude 4.6 Opus,sympy__sympy-13877,True,1,0,110,0,1.0000
+Claude 4.6 Opus,sympy__sympy-14248,True,2,0,433,0,1.0000
+Claude 4.6 Opus,sympy__sympy-14976,True,1,0,13,0,1.0000
+Claude 4.6 Opus,sympy__sympy-15599,,,,,,
+Claude 4.6 Opus,sympy__sympy-15875,False,0,1,80,0,0.9877
+Claude 4.6 Opus,sympy__sympy-18211,True,1,0,54,0,1.0000
