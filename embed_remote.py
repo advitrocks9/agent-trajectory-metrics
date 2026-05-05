@@ -1,7 +1,7 @@
 """Embed every patch (predicted + ground truth) into a fixed-size vector.
 
-Run on the GPU box. Takes the patches/ and predicted/ directories that the
-local machine has rsync'd up, mean-pools the last hidden states of
+Run on the 4090. Takes the patches/ and predicted/ directories that the
+Mac has rsync'd over, mean-pools the last hidden states of
 Qwen2.5-Coder-1.5B over each patch, and writes embeddings.npy + an index
 CSV that maps each row to its (kind, model_or_gt, instance_id).
 

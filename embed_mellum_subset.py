@@ -1,7 +1,7 @@
 """Embed a subset of patches with Mellum, in both raw and FIM input formats.
 
-The full 3000-patch FIM re-embed needs the GPU box; on the local 16GB Mac
-it would take many hours under MPS. To keep the FIM-vs-raw comparison
+The full 3000-patch FIM re-embed needs the 4090; on the 16 GB Mac it
+would take many hours under MPS. To keep the FIM-vs-raw comparison
 honest without re-embedding the world, this script:
 
   1. Reads `data/exec_subset.json` -- the 50 instance IDs picked for the
