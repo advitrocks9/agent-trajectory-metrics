@@ -4,7 +4,7 @@ A scratch log of dead ends and parking-lot ideas. Mostly here so that future-me 
 
 ## Sentence-transformer embedders
 
-Tried to use `jinaai/jina-embeddings-v3` and `BAAI/bge-large-en-v1.5` first because they are actually trained for retrieval (cosine similarity is meaningful). Neither was cached on prannayk-gpu-1 and downloading both would have eaten an evening. Ended up using Qwen2.5-Coder-1.5B instead (already cached) with mean-pooled hidden states. Mellum-4b-sft-python was also already cached, so I used that as the second encoder.
+Tried to use `jinaai/jina-embeddings-v3` and `BAAI/bge-large-en-v1.5` first because they are actually trained for retrieval (cosine similarity is meaningful). Neither was in the local HF cache and downloading both would have eaten an evening. Ended up using Qwen2.5-Coder-1.5B instead (already cached) with mean-pooled hidden states. Mellum-4b-sft-python was also already cached, so I used that as the second encoder.
 
 Verdict: it would still be worth trying jina-v3 to see whether the retrieval-trained loss gives a wider resolved/unresolved cosine gap than the autoregressive mean-pool. The textual `patch_overlap` baseline (Jaccard over diff hunks) actually ties Mellum (`+overlap` 0.772 vs `+mellum` 0.770 LOMO AUC), which made me suspect the LM embeddings are mostly recovering surface lexical overlap rather than something deeper.
 

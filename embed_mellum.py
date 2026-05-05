@@ -15,12 +15,12 @@ Notes:
     --input-format raw keeps the old behaviour for ablation.
   * `AutoModel.from_pretrained` discards `lm_head.weight` (logged as
     UNEXPECTED in data/embed_mellum.log). That is correct for embedding
-    extraction (we only need the base hidden states) but it does mean the
-    SFT-specific specialisation in the LM head is lost.
-  * `--batch 1` was a GPU-sharing workaround on prannayk-gpu-1 because
-    two other jobs were running at the time; the default is 4.
+    extraction (only the base hidden states are needed) but it does mean
+    the SFT-specific specialisation in the LM head is lost.
+  * `--batch 1` was a workaround on the 4090 because two other jobs
+    were sharing the GPU at the time; the default is 4.
 
-Run on the GPU box; pull embeddings.npy back the same way.
+Run on the 4090; pull embeddings.npy back the same way.
 """
 from __future__ import annotations
 
@@ -42,12 +42,12 @@ def fim_wrap(patch: str) -> str:
     The model card shows multi-file FIM inputs of the form
         <filename>foo.py\n<contents>\n<filename>bar.py\n<contents>\n
         <filename>target.py\n<fim_suffix>...<fim_prefix>...<fim_middle>
-    Our task is not actual completion; we just want a hidden state that
-    reflects the patch in the format the model was trained on. So we
-    treat the patch as the "current file" and ask for the middle of it.
-    Empty prefix and suffix are deliberate: the patch is the whole
-    payload we care about, and the FIM tokens push the activations into
-    the SFT distribution.
+    The task here is not actual completion; the script just needs a
+    hidden state that reflects the patch in the format the model was
+    trained on. So the patch goes in as the "current file" and the
+    model is asked for the middle. Empty prefix and suffix are
+    deliberate: the patch is the whole payload that matters, and the
+    FIM tokens push the activations into the SFT distribution.
     """
     return (
         f"<filename>tmp/patch.diff\n"
